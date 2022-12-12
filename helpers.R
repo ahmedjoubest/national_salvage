@@ -197,20 +197,21 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
   
   
   
-  DF_Best_Price<-cbind ("Items Name"=Correspondance_Df$`Common Item Names` ,Df_Comparable) %>% 
-    select("Items Name","CMI Price","ABC Price")
+  DF_Best_Price<-cbind ("Item Name"=Correspondance_Df$`Common Item Names` ,Df_Comparable) %>% 
+    select("Item Name","CMI Price","ABC Price")
   
   
   DF_Best_Price <- DF_Best_Price %>% 
-    mutate(`Corresponding Purchase`="")
+    mutate(`Best Purchaser`="")
   
   for (i in 1:nrow(DF_Best_Price)){
     if(DF_Best_Price$`CMI Price`[i]>DF_Best_Price$`ABC Price`[i]){
-      DF_Best_Price$`Corresponding Purchase`[i]="CMI"
+      DF_Best_Price$`Best Purchaser`[i]="CMI"
     } else {
-      DF_Best_Price$`Corresponding Purchase`[i]="ABC"
+      DF_Best_Price$`Best Purchaser`[i]="ABC"
     }
   }
+  
   return(list(Correspondance_Df,non_Correspondance_Df,DF_Best_Price))
 }
 
@@ -236,7 +237,7 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
 #
 #highchart() %>% 
 #  hc_chart(type = "column") %>%
-#  hc_xAxis(categories =DF_Best_Price[,1],title = list(text= '<b> Items Name <b>')) %>%
+#  hc_xAxis(categories =DF_Best_Price[,1],title = list(text= '<b> Item Name <b>')) %>%
 #  hc_yAxis(min= 0, title=list(text= "<b> Price ($) <b>")) %>%
 #  hc_add_series(name="CMI Price",
 #                data = DF_Best_Price[,2]) %>%

@@ -5,7 +5,7 @@ ui <- fluidPage(
     .tabbable > .nav > li[class=active]    > a {background-color: white; color:black}
   ")),
   
-  
+  titlePanel("Price comparison", windowTitle = "Price comparison"),
   sidebarPanel(
     fileInput("PDF_file1", "Import CMI PDF File", accept = ".pdf"),
     br(),
@@ -20,7 +20,8 @@ ui <- fluidPage(
     fluidRow(
       column(
         12,
-        actionButton("Run", "Run App", style = "color: #fff; background-color: #337ab7;
+        actionButton(
+          "Run", "Run App", style = "color: #fff; background-color: #337ab7;
                  border-color: #2e6da4; margin: auto")
         , align = "center"
         , style = "margin-bottom: 10px;"
@@ -34,46 +35,51 @@ ui <- fluidPage(
     
     tabsetPanel(
       type = "tabs",
-      tabPanel(" titre",
-               conditionalPanel(condition = "input.Run==true",
-                                
-                                h4("Results"), br(),
-                                fluidRow(width=12,DT::dataTableOutput('DF_Best_Price') %>% 
-                                           withSpinner(color="#3C8DBC",type=4, proxy.height = "127px",size = 0.5)),  
-                                br(),
-                                br(),
-                                
-                                fluidRow(
-                                  pickerInput(
-                                    inputId = "Filter",label = "Choose a Purchase Name",
-                                    choices = c("CMI", "ABC"),
-                                    selected = c("CMI"),
-                                    options = pickerOptions(actionsBox = T, liveSearch = T, size = 10,
-                                                            dropdownAlignRight = T)
-                                  )), 
-                                br(),
-                                br(),
-                                fluidRow(width=12,DT::dataTableOutput('Best_Price_filter')%>% 
-                                           withSpinner(color="#3C8DBC",type=4, proxy.height = "127px",size = 0.5)),
-                                
-                                highchartOutput("Hc_BarPlot") %>% 
-                                  withSpinner(color="#3C8DBC",type=4, proxy.height = "127px",size = 0.5)
-               )
+      tabPanel(
+        "Price comparison",
+        conditionalPanel(
+          condition = "input.Run>=1",
+          
+          h3("Comparison price between CMI and ABC:"),
+          br(),
+          tags$p("The following bar plot allows you to compare the bids per purchaser and per items:"),
+          br(),
+          
+          highchartOutput("Hc_BarPlot",height="388px") %>% 
+            withSpinner(color="#3C8DBC",type=4, size = 0.5),
+          
+          h3("Price table"),
+          br(),
+          tags$p("The following data table shows the purchaser prices used in the plot above:"),
+          br(),
+          DT::dataTableOutput('DF_Best_Price') %>% 
+            withSpinner(color="#3C8DBC",type=4,size = 0.5),
+          br(),
+          h3("Best purchasers:"),
+          br(),
+          tags$p("Based on the previous data, this list shows what item should be sold to which purchaser"),
+          br(),
+          uiOutput("purchase_list") %>% 
+            withSpinner(color="#3C8DBC",type=4,size = 0.5),  
+          br()
+          
+        )
       ),
-      tabPanel(" titre",
-               conditionalPanel(condition = "input.Run==true",
-                                h4("Correspondance Data Frame"), br(),
-                                fluidRow(width=12,DT::dataTableOutput('Correspondance_Df')%>% 
-                                           withSpinner(color="#3C8DBC",type=4, proxy.height = "127px",size = 0.5))
-               ), 
-               conditionalPanel((condition = "input.Run==true" ),
-                                
-                                h4("Non Correspondance Data Frame"), br(),
-                                fluidRow(width=12,DT::dataTableOutput('non_Correspondance_Df') %>% 
-                                           withSpinner(color="#3C8DBC",type=4, proxy.height = "127px",size = 0.5)),  
-
-               )
-               )
+      tabPanel(
+        "More details",
+        conditionalPanel(
+          condition = "input.Run>=1",
+          h3("Corresponding items:"), br(),
+          tags$p("This data table shows the items that matches between ABC and CMI"),
+          width=12,DT::dataTableOutput('Correspondance_Df')%>% 
+            withSpinner(color="#3C8DBC",type=4, size = 0.5),br(),
+          h3("Non Corresponding Data Frame"), br(),
+          tags$p("You can find below the items that don't match between the two uploaded PDF's"),
+          width=12,DT::dataTableOutput('non_Correspondance_Df') %>% 
+            withSpinner(color="#3C8DBC",type=4, size = 0.5),
+          br(),br()
+        )
+      )
     ),
     
     width = 9)
