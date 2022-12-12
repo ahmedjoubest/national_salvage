@@ -20,8 +20,9 @@ ui <- fluidPage(
     fluidRow(
       column(
         12,
+        # M 2-1 C
         actionButton(
-          "Run", "Run App", style = "color: #fff; background-color: #337ab7;
+          "Run", "Run Comparison", style = "color: #fff; background-color: #337ab7;
                  border-color: #2e6da4; margin: auto")
         , align = "center"
         , style = "margin-bottom: 10px;"

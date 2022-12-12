@@ -1,4 +1,5 @@
-server <- function(input, output, session) { 
+server <- function(input, output, session) {
+  
   values <- reactiveValues(
     PDF_CMI = NULL,
     PDF_ABC = NULL,
@@ -7,8 +8,13 @@ server <- function(input, output, session) {
     non_Correspondance_Df = NULL,
     DF_Best_Price = NULL
   )
+  
   observeEvent(input$Run,{
-    
+    values$CMI_ABC_Df <-readxl::read_excel(input$EXEL_file$datapath, sheet = "Sheet1", na = "n/a")
+    values$PDF_CMI <-pdf_text(input$PDF_file1$datapath)%>% 
+      str_split("\n")
+    values$PDF_ABC <-pdf_text(input$PDF_file2$datapath)%>% 
+      str_split("\n")
     #  t <- Sys.time()
     CMI_Df <- CMI_fun(values$PDF_CMI)
     ABC_Df <- ABC_fun(values$PDF_ABC)
@@ -19,24 +25,6 @@ server <- function(input, output, session) {
     values$DF_Best_Price <- list[[3]]
     #  print(Sys.time()-t)
   })
-  
-  observeEvent(input$PDF_file1, {
-    values$PDF_CMI <-pdf_text(input$PDF_file1$datapath)%>% 
-      str_split("\n")
-    
-  })
-  
-  observeEvent(input$PDF_file2, {
-    values$PDF_ABC <-pdf_text(input$PDF_file2$datapath)%>% 
-      str_split("\n")
-    
-  })
-  
-  
-  observeEvent(input$EXEL_file, {
-    values$CMI_ABC_Df <-readxl::read_excel(input$EXEL_file$datapath, sheet = "Sheet1", na = "n/a")
-  })
-  
   
   #--------------------
   
@@ -78,7 +66,7 @@ server <- function(input, output, session) {
                ))
       )
     )
-  }) 
+  })
   
   output$DF_Best_Price <- DT::renderDataTable({
     req(input$EXEL_file)
@@ -111,7 +99,6 @@ server <- function(input, output, session) {
   })
   
   output$Correspondance_Df <- DT::renderDataTable({
-    
     values$Correspondance_Df %>% 
       DT::datatable( escape=F, rownames = F, 
                      callback = JS("$('table.dataTable.no-footer').css('border-bottom', 'none');"),
@@ -119,7 +106,6 @@ server <- function(input, output, session) {
   })
   
   output$non_Correspondance_Df <- DT::renderDataTable({
-    
     values$non_Correspondance_Df %>% 
       DT::datatable( escape=F, rownames = F, 
                      callback = JS("$('table.dataTable.no-footer').css('border-bottom', 'none');"),
