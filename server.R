@@ -32,7 +32,9 @@ server <- function(input, output, session) {
   output$purchase_list <- renderUI({
     req(input$PDF_file1)
     req(input$PDF_file2)
+    
     CMI <- values$DF_Best_Price[values$DF_Best_Price$`Best Purchaser`=="CMI",]
+    
     CMI <- sapply(
       1:nrow(CMI),
       function(i){

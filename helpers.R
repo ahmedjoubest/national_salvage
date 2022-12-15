@@ -142,11 +142,9 @@ ABC_fun<-function(PDF_ABC){
 }
 Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
   
-  CMI_ABC_Df <- CMI_ABC_Df[!is.na(CMI_ABC_Df$...4),] 
-  CMI_ABC_Df <- CMI_ABC_Df%>% 
-    select(CMI,...7,...4)
+  CMI_ABC_Df <- CMI_ABC_Df[!is.na(CMI_ABC_Df$Items),]
   
-  colnames(CMI_ABC_Df)<- c("CMI Items","ABC Items", "Common Item Names")
+  colnames(CMI_ABC_Df)<- c("CMI Items","Common Item Names","ABC Items")
   
   for (i in 1:nrow(CMI_ABC_Df)){
     for (j in 1:length(CMI_ABC_Df)){
