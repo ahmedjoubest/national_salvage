@@ -148,7 +148,7 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
   
   for (i in 1:nrow(CMI_ABC_Df)){
     for (j in 1:length(CMI_ABC_Df)){
-      CMI_ABC_Df[i,j] <- gsub("\\\r\n", "",CMI_ABC_Df[i,j]) 
+      CMI_ABC_Df[i,j] <- gsub("\n", "",CMI_ABC_Df[i,j])
     }
   }
   
