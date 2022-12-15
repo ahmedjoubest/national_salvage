@@ -10,7 +10,8 @@ server <- function(input, output, session) {
   )
   
   observeEvent(input$Run,{
-    values$CMI_ABC_Df <-readxl::read_excel(input$EXEL_file$datapath, sheet = "Sheet1", na = "n/a")
+    values$CMI_ABC_Df <-read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793", sheet = "Sheet1")
+    
     values$PDF_CMI <-pdf_text(input$PDF_file1$datapath)%>% 
       str_split("\n")
     values$PDF_ABC <-pdf_text(input$PDF_file2$datapath)%>% 
@@ -29,7 +30,6 @@ server <- function(input, output, session) {
   #--------------------
   
   output$purchase_list <- renderUI({
-    req(input$EXEL_file)
     req(input$PDF_file1)
     req(input$PDF_file2)
     CMI <- values$DF_Best_Price[values$DF_Best_Price$`Best Purchaser`=="CMI",]
@@ -69,7 +69,6 @@ server <- function(input, output, session) {
   })
   
   output$DF_Best_Price <- DT::renderDataTable({
-    req(input$EXEL_file)
     req(input$PDF_file1)
     req(input$PDF_file2)
     values$DF_Best_Price %>% 
@@ -80,7 +79,6 @@ server <- function(input, output, session) {
   
   
   output$Hc_BarPlot <- renderHighchart({
-    req(input$EXEL_file)
     req(input$PDF_file1)
     req(input$PDF_file2)
     highchart() %>% 

@@ -12,9 +12,9 @@ ui <- fluidPage(
     fileInput("PDF_file2", "Import ABC PDF File", accept = ".pdf"),
     br(),
     # tableOutput("files"),
-    br(),
-    fileInput("EXEL_file", "Import Exel File", accept = ".xlsx"),
-    br(),
+    # br(),
+    # fileInput("EXEL_file", "Import Exel File", accept = ".xlsx"),
+    # br(),
     # tableOutput("files"),
     br(),
     fluidRow(
