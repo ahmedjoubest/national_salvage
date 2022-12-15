@@ -10,7 +10,8 @@ server <- function(input, output, session) {
   )
   
   observeEvent(input$Run,{
-    values$CMI_ABC_Df <-read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793", sheet = "Sheet1")
+    values$CMI_ABC_Df <-read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
+                                   sheet = "Sheet1")
     
     values$PDF_CMI <-pdf_text(input$PDF_file1$datapath)%>% 
       str_split("\n")
@@ -32,20 +33,27 @@ server <- function(input, output, session) {
   output$purchase_list <- renderUI({
     req(input$PDF_file1)
     req(input$PDF_file2)
-    
     CMI <- values$DF_Best_Price[values$DF_Best_Price$`Best Purchaser`=="CMI",]
+    if(nrow(CMI)>0){
+      CMI <- sapply(
+        1:nrow(CMI),
+        function(i){
+          paste0("<li>", CMI$`Item Name`[i],": $",CMI$`CMI Price`[i], "</li>")
+        }) %>% paste0(collapse = "")
+    } else{
+      CMI<- paste("<li> No Items for CMI </li>")
+    }
     
-    CMI <- sapply(
-      1:nrow(CMI),
-      function(i){
-        paste0("<li>", CMI$`Item Name`[i],": $",CMI$`CMI Price`[i], "</li>")
-      }) %>% paste0(collapse = "")
     ABC <- values$DF_Best_Price[values$DF_Best_Price$`Best Purchaser`=="ABC",]
-    ABC <- sapply(
-      1:nrow(ABC),
-      function(i){
-        paste0("<li>", ABC$`Item Name`[i],": $",ABC$`ABC Price`[i], "</li>")
-      }) %>% paste0(collapse = "")
+    if(nrow(ABC)>0){
+      ABC <- sapply(
+        1:nrow(ABC),
+        function(i){
+          paste0("<li>", ABC$`Item Name`[i],": $",ABC$`ABC Price`[i], "</li>")
+        }) %>% paste0(collapse = "")
+    } else{
+      ABC<- paste("<li> No Items for ABC </li>")
+    }
     tagList(
       fluidRow(
         column(6,
@@ -65,7 +73,8 @@ server <- function(input, output, session) {
     <ul>
         ",ABC,"</ul>"
                  )
-               ))
+               )
+        )
       )
     )
   })
@@ -76,7 +85,7 @@ server <- function(input, output, session) {
     values$DF_Best_Price %>% 
       DT::datatable( escape=F, rownames = F, 
                      callback = JS("$('table.dataTable.no-footer').css('border-bottom', 'none');"),
-                     options = list(lengthChange = F, paging = T))
+                     options = list(lengthChange = F, paging = F))
   })
   
   
@@ -102,14 +111,14 @@ server <- function(input, output, session) {
     values$Correspondance_Df %>% 
       DT::datatable( escape=F, rownames = F, 
                      callback = JS("$('table.dataTable.no-footer').css('border-bottom', 'none');"),
-                     options = list(lengthChange = F, paging = T))
+                     options = list(lengthChange = F, paging = F))
   })
   
   output$non_Correspondance_Df <- DT::renderDataTable({
     values$non_Correspondance_Df %>% 
       DT::datatable( escape=F, rownames = F, 
                      callback = JS("$('table.dataTable.no-footer').css('border-bottom', 'none');"),
-                     options = list(lengthChange = F, paging = T))
+                     options = list(lengthChange = F, paging = F))
   })
 }
 

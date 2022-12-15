@@ -140,6 +140,7 @@ ABC_fun<-function(PDF_ABC){
   
   return(ABC_Df)
 }
+
 Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
   
   CMI_ABC_Df <- CMI_ABC_Df[!is.na(CMI_ABC_Df$Items),]
@@ -148,7 +149,7 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
   
   for (i in 1:nrow(CMI_ABC_Df)){
     for (j in 1:length(CMI_ABC_Df)){
-      CMI_ABC_Df[i,j] <- gsub("\n", "",CMI_ABC_Df[i,j])
+      CMI_ABC_Df[i,j] <- gsub("\n", "",CMI_ABC_Df[i,j]) 
     }
   }
   
@@ -156,7 +157,7 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
   colnames(Correspondance_Df) = c("CMI Items","ABC Items", "Common Item Names")
   
   non_Correspondance_Df=data.frame(matrix(nrow=nrow(CMI_ABC_Df), ncol = 3)) 
-  colnames(non_Correspondance_Df) = c("CMI Items","ABC Items", "Common Item Names")
+  colnames(non_Correspondance_Df) = c("CMI Items", "Common Item Names","ABC Items")
   
   i=1
   while(i<=nrow(CMI_ABC_Df)){
@@ -181,7 +182,7 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
   }
   
   Correspondance_Df<-na.omit(Correspondance_Df)
-  non_Correspondance_Df<-na.omit(non_Correspondance_Df)
+  non_Correspondance_Df<-na.omit(non_Correspondance_Df) %>% select("CMI Items","ABC Items", "Common Item Names")
   
   Df_Comparable = data.frame(matrix(nrow=nrow(Correspondance_Df), ncol = 4)) 
   colnames(Df_Comparable) = c("CMI Items","CMI Price","ABC Items","ABC Price") 
@@ -246,8 +247,7 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
 #             crosshairs = TRUE,
 #             followPointer = T,
 #             borderColor = "grey")
-  
-  
-  
-  
-  
+
+
+
+
