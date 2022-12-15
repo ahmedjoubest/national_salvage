@@ -145,7 +145,7 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
   
   CMI_ABC_Df <- CMI_ABC_Df[!is.na(CMI_ABC_Df$Items),]
   
-  colnames(CMI_ABC_Df)<- c("CMI Items","Common Item Names","ABC Items")
+  colnames(CMI_ABC_Df)<- c("CMI Items","Commun Item Names","ABC Items")
   
   for (i in 1:nrow(CMI_ABC_Df)){
     for (j in 1:length(CMI_ABC_Df)){
@@ -154,10 +154,10 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
   }
   
   Correspondance_Df=data.frame(matrix(nrow=nrow(CMI_ABC_Df), ncol = 3)) 
-  colnames(Correspondance_Df) = c("CMI Items","ABC Items", "Common Item Names")
+  colnames(Correspondance_Df) = c("CMI Items","ABC Items", "Commun Item Names")
   
   non_Correspondance_Df=data.frame(matrix(nrow=nrow(CMI_ABC_Df), ncol = 3)) 
-  colnames(non_Correspondance_Df) = c("CMI Items", "Common Item Names","ABC Items")
+  colnames(non_Correspondance_Df) = c("CMI Items", "Commun Item Names","ABC Items")
   
   i=1
   while(i<=nrow(CMI_ABC_Df)){
@@ -171,7 +171,7 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
     } else {
       Correspondance_Df[i,2]=  NA
     }
-    Correspondance_Df[i,3]= CMI_ABC_Df$`Common Item Names` [i]
+    Correspondance_Df[i,3]= CMI_ABC_Df$`Commun Item Names` [i]
     i=i+1
   }
   
@@ -182,7 +182,7 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
   }
   
   Correspondance_Df<-na.omit(Correspondance_Df)
-  non_Correspondance_Df<-na.omit(non_Correspondance_Df) %>% select("CMI Items","ABC Items", "Common Item Names")
+  non_Correspondance_Df<-na.omit(non_Correspondance_Df) %>% select("CMI Items","ABC Items", "Commun Item Names")
   
   Df_Comparable = data.frame(matrix(nrow=nrow(Correspondance_Df), ncol = 4)) 
   colnames(Df_Comparable) = c("CMI Items","CMI Price","ABC Items","ABC Price") 
@@ -196,7 +196,7 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
   
   
   
-  DF_Best_Price<-cbind ("Item Name"=Correspondance_Df$`Common Item Names` ,Df_Comparable) %>% 
+  DF_Best_Price<-cbind ("Item Name"=Correspondance_Df$`Commun Item Names` ,Df_Comparable) %>% 
     select("Item Name","CMI Price","ABC Price")
   
   
