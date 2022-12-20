@@ -20,6 +20,27 @@ server <- function(input, output, session) {
     #  t <- Sys.time()
     CMI_Df <- CMI_fun(values$PDF_CMI)
     ABC_Df <- ABC_fun(values$PDF_ABC)
+    if (input$UpdateGS){
+      CMI_Pricing <-read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
+                               sheet = "CMI Platinum Pricing")
+      
+      CMI_Pricing <- CMI_Pricing %>% select("Product")
+      CMI_Pricing<- CMI_Pricing[!is.na(CMI_Pricing$Product),] 
+      DF_to_overwrite  <- data.frame(matrix(nrow = nrow(CMI_Pricing), ncol = 2))
+      colnames(DF_to_overwrite)<- c("Product","CMI")
+      for (i in 2:nrow(CMI_Pricing)) {
+        for (j in 1:nrow(CMI_Df)) {
+          if (CMI_Pricing[i,]==CMI_Df[j,1]){
+            DF_to_overwrite[i,1]=CMI_Df[j,1]
+            DF_to_overwrite[i,2]=CMI_Df[j,2] %>% as.numeric()
+          }
+        }
+      }
+      DF_to_overwrite<-DF_to_overwrite %>% drop_na()
+      sheet_write("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
+                  data = DF_to_overwrite, sheet = "Scrapper for R")
+      
+    }
     #  print(Sys.time()-t)
     list <- Compare_fun(values$CMI_ABC_Df,CMI_Df,ABC_Df)
     values$Correspondance_Df <- list[[1]]
@@ -85,7 +106,7 @@ server <- function(input, output, session) {
     values$DF_Best_Price %>% 
       DT::datatable( escape=F, rownames = F, 
                      callback = JS("$('table.dataTable.no-footer').css('border-bottom', 'none');"),
-                     options = list(lengthChange = F, paging = F))
+                     options = list(lengthChange = F, paging = F,selection="single"))
   })
   
   
@@ -111,14 +132,14 @@ server <- function(input, output, session) {
     values$Correspondance_Df %>% 
       DT::datatable( escape=F, rownames = F, 
                      callback = JS("$('table.dataTable.no-footer').css('border-bottom', 'none');"),
-                     options = list(lengthChange = F, paging = F))
+                     options = list(lengthChange = F, paging = F,selection="single"))
   })
   
   output$non_Correspondance_Df <- DT::renderDataTable({
     values$non_Correspondance_Df %>% 
       DT::datatable( escape=F, rownames = F, 
                      callback = JS("$('table.dataTable.no-footer').css('border-bottom', 'none');"),
-                     options = list(lengthChange = F, paging = F))
+                     options = list(lengthChange = F, paging = F,selection="single"))
   })
 }
 

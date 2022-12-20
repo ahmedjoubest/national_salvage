@@ -10,12 +10,13 @@ ui <- fluidPage(
     fileInput("PDF_file1", "Import CMI PDF File", accept = ".pdf"),
     br(),
     fileInput("PDF_file2", "Import ABC PDF File", accept = ".pdf"),
-    br(),
     # tableOutput("files"),
     # br(),
     # fileInput("EXEL_file", "Import Exel File", accept = ".xlsx"),
     # br(),
     # tableOutput("files"),
+    checkboxInput("UpdateGS",
+                  "Update CMI Platinum Pricing Sheet", value = FALSE),
     br(),
     fluidRow(
       column(
