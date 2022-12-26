@@ -141,7 +141,7 @@ ABC_fun<-function(PDF_ABC){
   return(ABC_Df)
 }
 
-Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
+Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df,CMI_Price_variation,ABC_Price_variation){
   
   CMI_ABC_Df <- CMI_ABC_Df[!is.na(CMI_ABC_Df$Items),]
   
@@ -185,6 +185,7 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
   non_Correspondance_Df<-na.omit(non_Correspondance_Df) %>% select("CMI Items","ABC Items", "Commun Item Names")
   
   Df_Comparable = data.frame(matrix(nrow=nrow(Correspondance_Df), ncol = 4)) 
+  
   colnames(Df_Comparable) = c("CMI Items","CMI Price","ABC Items","ABC Price") 
   for(i in 1:nrow(Correspondance_Df)){
     Df_Comparable[i,1]=(CMI_Df %>% filter(CMI_Df$`Item name`== Correspondance_Df$`CMI Items`[i]))[1]
@@ -197,23 +198,39 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
   
   
   DF_Best_Price<-cbind ("Item Name"=Correspondance_Df$`Commun Item Names` ,Df_Comparable) %>% 
-    select("Item Name","CMI Price","ABC Price")
-  
-  
-  DF_Best_Price <- DF_Best_Price %>% 
+    mutate(`CMI Variation` = NA) %>% 
+    mutate(`ABC Variation` = NA) %>%
+    select("Item Name","CMI Price","CMI Variation","ABC Price","ABC Variation") %>% 
     mutate(`Best Purchaser`="")
   
-  for (i in 1:nrow(DF_Best_Price)){
+  for(i in 1:nrow(DF_Best_Price)){
     if(DF_Best_Price$`CMI Price`[i]>DF_Best_Price$`ABC Price`[i]){
       DF_Best_Price$`Best Purchaser`[i]="CMI"
     } else {
       DF_Best_Price$`Best Purchaser`[i]="ABC"
     }
+
+    for(j in 1:ncol(CMI_Price_variation)){
+      if(!is.na(colnames(CMI_Price_variation)[j])){
+      if(DF_Best_Price$`Item Name`[i]==colnames(CMI_Price_variation)[j]){
+        DF_Best_Price$`CMI Variation`[i]=spk_chr(CMI_Price_variation[,colnames(CMI_Price_variation)[j]], type = 'line')
+      }
+    }
+    }
+    for(j in 1:ncol(ABC_Price_variation)){
+      if(!is.na(colnames(ABC_Price_variation)[j])){
+      if(DF_Best_Price$`Item Name`[i]==colnames(ABC_Price_variation)[j]){
+        DF_Best_Price$`ABC Variation`[i]= spk_chr(ABC_Price_variation[,colnames(ABC_Price_variation)[j]], type = 'line')
+      }
+    }
+    }
   }
-  
+
   return(list(Correspondance_Df,non_Correspondance_Df,DF_Best_Price))
 }
-
+#spk_add_deps(datatable(DF_Best_Price, escape = FALSE))
+#
+#
 #PDF_CMI <- pdf_text("CMI Px 11 28 22.pdf")%>% 
 #  str_split("\n")
 #
@@ -233,20 +250,43 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df){
 #non_Correspondance_Df <- Compare_fun(CMI_ABC_Df,CMI_Df,ABC_Df)[2] %>% as.data.frame()
 #
 #DF_Best_Price <- Compare_fun(CMI_ABC_Df,CMI_Df,ABC_Df)[3] %>% as.data.frame()
+
+
+
+#initialisation of rds file with referance names
+
+#CMI_Price_variation<-CMI_Refrence_name[,2] %>% t() %>% as.data.frame()
+#colnames(CMI_Price_variation) <- CMI_Price_variation[1, ]
+#CMI_Price_variation<- CMI_Price_variation[-1, ]
+#saveRDS(CMI_Price_variation, file = "CMI_Price_Variation.rds")
+
+
+#ABC_Price_variation<-ABC_Refrence_name[,2] %>% t() %>% as.data.frame()
+#colnames(ABC_Price_variation) <- ABC_Price_variation[1, ]
+#ABC_Price_variation<- ABC_Price_variation[-1, ]
+#saveRDS(ABC_Price_variation, file = "ABC_Price_Variation.rds")
+
+
+#CMI_Price_variation<-CMI_Price_variation %>% 
+#  mutate(newcol=CMI_Price_variation[,10])
+#colnames(CMI_Price_variation)[ncol(CMI_Price_variation)]<-CMI_Refrence_name[63,2]
+#CMI_Price_variation <- read_rds("CMI_Price_Variation.rds")
+
+
+#saveRDS(CMI_Price_variation, file = "CMI_Histo_example.rds")
+#saveRDS(ABC_Price_variation, file = "ABC_Histo_example.rds")
+#saveRDS(CMI_Price_variation, file = "CMI_Price_Variation.rds")
+#saveRDS(ABC_Price_variation, file = "ABC_Price_Variation.rds")
 #
-#highchart() %>% 
-#  hc_chart(type = "column") %>%
-#  hc_xAxis(categories =DF_Best_Price[,1],title = list(text= '<b> Item Name <b>')) %>%
-#  hc_yAxis(min= 0, title=list(text= "<b> Price ($) <b>")) %>%
-#  hc_add_series(name="CMI Price",
-#                data = DF_Best_Price[,2]) %>%
-#  hc_add_series(name="ABC Price",
-#                data = DF_Best_Price[,3])%>%
-#  hc_colors(c("#e9724d", "#0000FF")) %>% 
-#  hc_tooltip(shared = TRUE,
-#             crosshairs = TRUE,
-#             followPointer = T,
-#             borderColor = "grey")
+#
+#
+#ABC_Price_variation<-ABC_Price_variation[c(-nrow(ABC_Price_variation),-(nrow(ABC_Price_variation)-1),-(nrow(ABC_Price_variation)-2)),]
+#CMI_Price_variation<-CMI_Price_variation[c(-nrow(CMI_Price_variation),-(nrow(CMI_Price_variation)-1),-(nrow(CMI_Price_variation)-2)),]
+
+
+
+
+
 
 
 
