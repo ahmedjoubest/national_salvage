@@ -16,6 +16,8 @@ library(googlesheets4)
 library(sparkline)
 library(htmlwidgets)
 library(DT)
+library(rdrop2)
+
 # Sourcing  ------------------------------
 source("helpers.R")
 
@@ -31,6 +33,23 @@ ABC_Refrence_name<- read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNs
 for (i in 1:nrow(ABC_Refrence_name)){
     ABC_Refrence_name[i,1] <- gsub("\n", "",ABC_Refrence_name[i,1]) 
 }
+
+for (i in 1:nrow(CMI_Refrence_name)){
+  CMI_Refrence_name[i,1] <- gsub("\n", "",CMI_Refrence_name[i,1]) 
+}
+
+#token <- drop_auth()
+#saveRDS(token, file = "token.rds")
+
+drop_download("national_salvage/CMI_Histo_example.rds", dtoken = token, overwrite = T)
+drop_download("national_salvage/ABC_Histo_example.rds", dtoken = token, overwrite = T)
+
+#drop_upload("CMI_Histo_example.rds",path = "national_salvage")
+#drop_upload("CMI_Price_Variation.rds",path = "national_salvage")
+#drop_upload("ABC_Histo_example.rds",path = "national_salvage")
+#drop_upload("ABC_Price_Variation.rds",path = "national_salvage")
+
+
 
 #CMI_Price_variation <- read_rds("CMI_Price_Variation.rds")
 #ABC_Price_variation <- read_rds("ABC_Price_Variation.rds")

@@ -21,6 +21,7 @@ ui <- fluidPage(
     br(),
     checkboxInput("Update_HD",
                   "Update Price Variation Sheet", value = FALSE),
+    br(),
     fluidRow(
       column(
         12,
