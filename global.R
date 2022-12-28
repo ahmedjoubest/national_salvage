@@ -29,8 +29,8 @@ gs4_auth(cache = ".secrets", email = "salvage.test1@gmail.com")
 
 # Dropbox authentication ------------
 
-#token <- drop_auth()
-#saveRDS(token, file = "token.rds")
+token <- drop_auth()
+# saveRDS(token, file = "token.rds")
 #token<- read_rds("token.rds")
 
 # Reading data  ------------

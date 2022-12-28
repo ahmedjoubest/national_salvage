@@ -6,18 +6,18 @@ ui <- fluidPage(
     .tabbable > .nav > li[class=active]    > a {background-color: white; color:black}
   ")),
   
-  titlePanel("Price comparison", windowTitle = "Price comparison"),
+  titlePanel("National Salvage Dashboard", windowTitle = "Price comparison"),
   sidebarPanel(
     fileInput("PDF_file1", "Import CMI PDF File", accept = ".pdf"),
     br(),
     fileInput("PDF_file2", "Import ABC PDF File", accept = ".pdf"),
-
+    br(),
     checkboxInput("UpdateGS",
-                  "Update CMI Platinum Pricing Sheet", value = FALSE),
+                  "Update 'CMI Platinum Pricing' Sheet", value = FALSE),
     br(),
     checkboxInput("Update_HD",
-                  "Update Price Variation Sheet", value = FALSE),
-    br(),
+                  "Update Price Data of CMI & ABC", value = FALSE),
+    br(),br(),
     fluidRow(
       column(
         12,
@@ -68,21 +68,6 @@ ui <- fluidPage(
         )
       ),
       tabPanel(
-        "More details",
-        conditionalPanel(
-          condition = "input.Run>=1",
-          h3("Corresponding items:"), br(),
-          tags$p("This data table shows the items that matches between ABC and CMI"),
-          width=12,DT::dataTableOutput('Correspondance_Df')%>% 
-            withSpinner(color="#3C8DBC",type=4, size = 0.5),br(),
-          h3("Non Corresponding Data Frame"), br(),
-          tags$p("You can find below the items that don't match between the two uploaded PDF's"),
-          width=12,DT::dataTableOutput('non_Correspondance_Df') %>% 
-            withSpinner(color="#3C8DBC",type=4, size = 0.5),
-          br(),br()
-        )
-      ),
-      tabPanel(
         "CMI & ABC Price Variation",
         conditionalPanel(
           condition = "input.Run>=1",
@@ -91,12 +76,26 @@ ui <- fluidPage(
         tags$p("The following plot shows the price historical data variation over time for each purchaser:"),
         br(),
         fluidRow(
-          column(width=6,selectInput("CMI_referance", "CMI Item name:", CMI_Refrence_name[,2])
-                 , align = "center"
+          column(width=6,
+                 pickerInput(
+                   inputId = "CMI_referance",label = "CMI Item name:",
+                   choices = CMI_Refrence_name[,2],
+                   selected = CMI_Refrence_name[,2][1:2],
+                   multiple = T,
+                   options = pickerOptions(actionsBox = T, liveSearch = T, size = 5,
+                                           dropdownAlignRight = T)
+                 ), align = "center"
                  , style = "margin-bottom: 10px;"
                  , style = "margin-top: -10px;"),
-          column(width=6,selectInput("ABC_referance", "ABC Item name:", ABC_Refrence_name[,2])
-                 , align = "center"
+          column(width=6,
+                 pickerInput(
+                   inputId = "ABC_referance",label = "ABC Item name:",
+                   choices = ABC_Refrence_name[,2],
+                   selected = ABC_Refrence_name[,2][1:2],
+                   multiple = T,
+                   options = pickerOptions(actionsBox = T, liveSearch = T, size = 5,
+                                           dropdownAlignRight = T)
+                 ),align = "center"
                  , style = "margin-bottom: 10px;"
                  , style = "margin-top: -10px;")
 
@@ -116,7 +115,22 @@ ui <- fluidPage(
                  , style = "margin-bottom: 10px;"
                  , style = "margin-top: -10px;")
           )
-      ))
+      )),
+      tabPanel(
+        "More details",
+        conditionalPanel(
+          condition = "input.Run>=1",
+          h3("Corresponding items:"), br(),
+          tags$p("This data table shows the items that matches between ABC and CMI"),
+          width=12,DT::dataTableOutput('Correspondance_Df')%>% 
+            withSpinner(color="#3C8DBC",type=4, size = 0.5),br(),
+          h3("Non Corresponding Data Frame"), br(),
+          tags$p("You can find below the items that don't match between the two uploaded PDF's"),
+          width=12,DT::dataTableOutput('non_Correspondance_Df') %>% 
+            withSpinner(color="#3C8DBC",type=4, size = 0.5),
+          br(),br()
+        )
+      )
     ),
     
     width = 9)
