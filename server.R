@@ -23,6 +23,19 @@ server <- function(input, output, session) {
     ABC_Df <- ABC_fun(values$PDF_ABC)
     
     ## -----------------------------
+    
+    for( i in 1:nrow(CMI_Price_variation)){
+      rownames(CMI_Price_variation)[i]=i
+      rownames(ABC_Price_variation)[i]=i
+      
+    }
+    
+    for( i in 1:nrow(ABC_Price_variation)){
+      rownames(CMI_Price_variation)[i]=as.character(Sys.Date()-128+i)
+      rownames(ABC_Price_variation)[i]=as.character(Sys.Date()-128+i)
+    }
+    
+    ## -----------------------------
     if (input$UpdateGS){
       CMI_Pricing <-read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
                                sheet = "CMI Platinum Pricing")
@@ -42,47 +55,54 @@ server <- function(input, output, session) {
       DF_to_overwrite<-DF_to_overwrite %>% drop_na()
       sheet_write("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
                   data = DF_to_overwrite, sheet = "Scrapper for R")
+      
+      
     }
     
     ## -----------------------------
     if(input$Update_HD){
+
       # ----
-      DF_CMI_stock <- data.frame(matrix(nrow = nrow(CMI_Df), ncol = 2))
-      colnames(DF_CMI_stock)<- c( "Item Refrence name", as.character(Sys.Date()) )
-      for (i in 1: nrow(DF_CMI_stock)){
-        for (j in 1: nrow(CMI_Df)){
-          if (CMI_Df$`Item name`[j]==CMI_Refrence_name$`Item name (in the PDF's)`[i]){
-            DF_CMI_stock[i,1]= CMI_Refrence_name$`Refrence name`[i]
-            DF_CMI_stock[i,2]=CMI_Df$`Daily price $`[j]
+      if(sum(rownames(CMI_Price_variation)[1:nrow(CMI_Price_variation)]==as.character(Sys.Date()))!=1){
+        DF_CMI_stock <- data.frame(matrix(nrow = nrow(CMI_Df), ncol = 2))
+        colnames(DF_CMI_stock)<- c( "Item Refrence name", as.character(Sys.Date()) )
+        for (i in 1: nrow(DF_CMI_stock)){
+          for (j in 1: nrow(CMI_Df)){
+            if (CMI_Df$`Item name`[j]==CMI_Refrence_name$`Item name (in the PDF's)`[i]){
+              DF_CMI_stock[i,1]= CMI_Refrence_name$`Refrence name`[i]
+              DF_CMI_stock[i,2]=CMI_Df$`Daily price $`[j]
+            }
           }
         }
+        DF_CMI_stock<-DF_CMI_stock %>% t() %>% as.data.frame()
+        colnames(DF_CMI_stock) <- DF_CMI_stock[1, ]
+        DF_CMI_stock<-DF_CMI_stock[-1,]
+        CMI_Price_variation<- rbind(CMI_Price_variation,DF_CMI_stock)
       }
-      DF_CMI_stock<-DF_CMI_stock %>% t() %>% as.data.frame()
-      colnames(DF_CMI_stock) <- DF_CMI_stock[1, ]
-      DF_CMI_stock<-DF_CMI_stock[-1,]
-      CMI_Price_variation<- rbind(CMI_Price_variation,DF_CMI_stock)
-      
       # ------- 
-      
-      DF_ABC_stock <- data.frame(matrix(nrow = nrow(ABC_Df), ncol = 2))
-      colnames(DF_ABC_stock)<- c( "Item Refrence name", as.character(Sys.Date()) )
-      for (i in 1: nrow(DF_ABC_stock)){
-        for (j in 1: nrow(ABC_Df)){
-          if (ABC_Df$`Item name`[j]==ABC_Refrence_name$`Item name (in the PDF's)`[i]){
-            DF_ABC_stock[i,1]= ABC_Refrence_name$`Refrence name`[i]
-            DF_ABC_stock[i,2]=ABC_Df$`Daily price $`[j]
+      if(sum(rownames(ABC_Price_variation)[1:nrow(ABC_Price_variation)]==as.character(Sys.Date()))!=1){
+        DF_ABC_stock <- data.frame(matrix(nrow = nrow(ABC_Df), ncol = 2))
+        colnames(DF_ABC_stock)<- c( "Item Refrence name", as.character(Sys.Date()) )
+        for (i in 1: nrow(DF_ABC_stock)){
+          for (j in 1: nrow(ABC_Df)){
+            if (ABC_Df$`Item name`[j]==ABC_Refrence_name$`Item name (in the PDF's)`[i]){
+              DF_ABC_stock[i,1]= ABC_Refrence_name$`Refrence name`[i]
+              DF_ABC_stock[i,2]=ABC_Df$`Daily price $`[j]
+            }
           }
         }
+        DF_ABC_stock<-DF_ABC_stock %>% t() %>% as.data.frame()
+        colnames(DF_ABC_stock) <- DF_ABC_stock[1, ]
+        DF_ABC_stock<-DF_ABC_stock[-1,]
+        ABC_Price_variation<- rbind(ABC_Price_variation,DF_ABC_stock)
       }
-      DF_ABC_stock<-DF_ABC_stock %>% t() %>% as.data.frame()
-      colnames(DF_ABC_stock) <- DF_ABC_stock[1, ]
-      DF_ABC_stock<-DF_ABC_stock[-1,]
-      ABC_Price_variation<- rbind(ABC_Price_variation,DF_ABC_stock)
-      
       # ----
       
-      # saveRDS(CMI_Price_variation, file = "CMI_Price_Variation.rds")
-      # saveRDS(ABC_Price_variation, file = "ABC_Price_Variation.rds")
+      saveRDS(CMI_Price_variation, file = "CMI_Histo_example.rds")
+      saveRDS(ABC_Price_variation, file = "ABC_Histo_example.rds")
+      
+      # drop_upload("CMI_Histo_example.rds",path = "National_Salvage_V_Test", dtoken = token)
+      # drop_upload("ABC_Histo_example.rds",path = "National_Salvage_V_Test", dtoken = token)
     } 
     
     ## -----------------------------
@@ -90,7 +110,16 @@ server <- function(input, output, session) {
     values$CMI_Price_variation<-CMI_Price_variation
     values$ABC_Price_variation<-ABC_Price_variation
     
+    # ------
+    CMI_Date<-rownames(values$CMI_Price_variation)
+    ABC_Date<-rownames(values$ABC_Price_variation)
+    sheet_write("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=2013206145",
+                data = cbind(CMI_Date,values$CMI_Price_variation), sheet = "CMI Historical Data")
+    sheet_write("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
+                data =  cbind(ABC_Date,values$ABC_Price_variation), sheet = "ABC Historical Data")
+    
     ## -----------------------------
+    
     list <- Compare_fun(values$CMI_ABC_Df,CMI_Df,ABC_Df,CMI_Price_variation,ABC_Price_variation)
     values$Correspondance_Df <- list[[1]]
     values$non_Correspondance_Df <- list[[2]]
@@ -148,15 +177,15 @@ server <- function(input, output, session) {
       )
     )
   })
-
+  
   output$DF_Best_Price <- DT::renderDataTable({
     req(input$PDF_file1)
-
+    
     values$DF_Best_Price %>% 
-     DT::datatable( escape=F, rownames = F,
-                    callback = JS("$('table.dataTable.no-footer').css('border-bottom', 'none');"),
-                    options = list(drawCallback =  JS('function(){debugger;HTMLWidgets.staticRender();}') 
-                                   ,lengthChange = F, paging = F,selection="single"))
+      DT::datatable( escape=F, rownames = F,
+                     callback = JS("$('table.dataTable.no-footer').css('border-bottom', 'none');"),
+                     options = list(drawCallback =  JS('function(){debugger;HTMLWidgets.staticRender();}') 
+                                    ,lengthChange = F, paging = F,selection="single"))
   })
   
   

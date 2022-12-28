@@ -58,6 +58,7 @@ CMI_fun<-function(PDF_CMI){
   CMI_Df=CMI_Df[!is.na(CMI_Df[,2]),] 
   return(CMI_Df)
 }
+
 ABC_fun<-function(PDF_ABC){
   
   ABC_char_length <- data.frame(matrix(nrow = length(PDF_ABC[[1]]), ncol = 4))
@@ -228,61 +229,20 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df,CMI_Price_variation,ABC_Price_var
 
   return(list(Correspondance_Df,non_Correspondance_Df,DF_Best_Price))
 }
-#spk_add_deps(datatable(DF_Best_Price, escape = FALSE))
-#
-#
-#PDF_CMI <- pdf_text("CMI Px 11 28 22.pdf")%>% 
-#  str_split("\n")
-#
-#
-#PDF_ABC <- pdf_text("National Salvage 11-28-22 (ABC PL).pdf")%>% 
-#  strsplit("\n") 
-#
-#CMI_ABC_Df <- readxl::read_excel("PL1-PL2 comparison.xlsx", sheet = "Sheet1", na = "n/a")
-#
-#CMI_Df <- CMI_fun(PDF_CMI)
-#
-#ABC_Df <- ABC_fun(PDF_ABC)
-#
-#
-#Correspondance_Df <- Compare_fun(CMI_ABC_Df,CMI_Df,ABC_Df)[1] %>% as.data.frame()
-#
-#non_Correspondance_Df <- Compare_fun(CMI_ABC_Df,CMI_Df,ABC_Df)[2] %>% as.data.frame()
-#
-#DF_Best_Price <- Compare_fun(CMI_ABC_Df,CMI_Df,ABC_Df)[3] %>% as.data.frame()
 
-
-
-#initialisation of rds file with referance names
-
-#CMI_Price_variation<-CMI_Refrence_name[,2] %>% t() %>% as.data.frame()
-#colnames(CMI_Price_variation) <- CMI_Price_variation[1, ]
-#CMI_Price_variation<- CMI_Price_variation[-1, ]
-#saveRDS(CMI_Price_variation, file = "CMI_Price_Variation.rds")
-
-
-#ABC_Price_variation<-ABC_Refrence_name[,2] %>% t() %>% as.data.frame()
-#colnames(ABC_Price_variation) <- ABC_Price_variation[1, ]
-#ABC_Price_variation<- ABC_Price_variation[-1, ]
-#saveRDS(ABC_Price_variation, file = "ABC_Price_Variation.rds")
-
-
-#CMI_Price_variation<-CMI_Price_variation %>% 
-#  mutate(newcol=CMI_Price_variation[,10])
-#colnames(CMI_Price_variation)[ncol(CMI_Price_variation)]<-CMI_Refrence_name[63,2]
-#CMI_Price_variation <- read_rds("CMI_Price_Variation.rds")
-
-
-#saveRDS(CMI_Price_variation, file = "CMI_Histo_example.rds")
-#saveRDS(ABC_Price_variation, file = "ABC_Histo_example.rds")
-#saveRDS(CMI_Price_variation, file = "CMI_Price_Variation.rds")
-#saveRDS(ABC_Price_variation, file = "ABC_Price_Variation.rds")
-#
-#
-#
-#ABC_Price_variation<-ABC_Price_variation[c(-nrow(ABC_Price_variation),-(nrow(ABC_Price_variation)-1),-(nrow(ABC_Price_variation)-2)),]
-#CMI_Price_variation<-CMI_Price_variation[c(-nrow(CMI_Price_variation),-(nrow(CMI_Price_variation)-1),-(nrow(CMI_Price_variation)-2)),]
-
+Reference_Name_All_Items<- function(CMI_ABC_reference_name){
+  
+  CMI_ABC_reference_name<-CMI_ABC_reference_name[,-3]
+  CMI_Refrence_name<-CMI_ABC_reference_name[,c(1,2)] %>% drop_na()
+  colnames(CMI_Refrence_name) <- CMI_Refrence_name[1, ]
+  CMI_Refrence_name<-CMI_Refrence_name[-1,]
+  ABC_Refrence_name<-CMI_ABC_reference_name[,c(3,4)] %>% drop_na()
+  colnames(ABC_Refrence_name) <- ABC_Refrence_name[1, ]
+  ABC_Refrence_name<-ABC_Refrence_name[-1,]
+  
+  return(list(CMI_Refrence_name,ABC_Refrence_name))
+  
+}
 
 
 
