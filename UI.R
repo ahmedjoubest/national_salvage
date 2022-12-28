@@ -11,11 +11,7 @@ ui <- fluidPage(
     fileInput("PDF_file1", "Import CMI PDF File", accept = ".pdf"),
     br(),
     fileInput("PDF_file2", "Import ABC PDF File", accept = ".pdf"),
-    # tableOutput("files"),
-    # br(),
-    # fileInput("EXEL_file", "Import Exel File", accept = ".xlsx"),
-    # br(),
-    # tableOutput("files"),
+
     checkboxInput("UpdateGS",
                   "Update CMI Platinum Pricing Sheet", value = FALSE),
     br(),
@@ -103,7 +99,6 @@ ui <- fluidPage(
                  , align = "center"
                  , style = "margin-bottom: 10px;"
                  , style = "margin-top: -10px;")
-
         ),
         highchartOutput("Hc_Price_variation",height="388px") %>% 
           withSpinner(color="#3C8DBC",type=4, size = 0.5),
