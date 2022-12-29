@@ -30,16 +30,16 @@ gs4_auth(cache = ".secrets", email = "salvage.test1@gmail.com")
 
 # Reading and preparing Data  ------------
 
-CMI_ABC_reference_name<- read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
+CMI_ABC_reference_name<- read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=1964491178",
                                     sheet = "Reference name all items") %>% as.data.frame()
 
-CMI_Price_variation <- read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
+CMI_Price_variation <- read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=1964491178",
                                   sheet = "CMI Historical Data") %>% as.data.frame()
 rownames(CMI_Price_variation)<-CMI_Price_variation[,1]
 CMI_Price_variation<-CMI_Price_variation[,-1]
 
 
-ABC_Price_variation <- read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
+ABC_Price_variation <- read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=1964491178",
                                   sheet = "ABC Historical Data") %>% as.data.frame()
 rownames(ABC_Price_variation)<-ABC_Price_variation[,1]
 ABC_Price_variation<-ABC_Price_variation[,-1]

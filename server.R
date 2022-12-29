@@ -13,7 +13,7 @@ server <- function(input, output, session) {
     ## -----------------------------
     
     # Correction 5-A
-#    values$CMI_ABC_Df <-read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
+#    values$CMI_ABC_Df <-read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=1964491178",
 #                                   sheet = "Sheet1")
 #    
     values$PDF_CMI <-pdf_text(input$PDF_file1$datapath)%>% 
@@ -39,7 +39,7 @@ server <- function(input, output, session) {
     
     ## -----------------------------
     if (input$UpdateGS){
-      CMI_Pricing <-read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
+      CMI_Pricing <-read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=1964491178",
                                sheet = "CMI Platinum Pricing")
       CMI_Pricing <- CMI_Pricing %>% select("Product")
       CMI_Pricing<- CMI_Pricing[!is.na(CMI_Pricing$Product),] 
@@ -54,7 +54,7 @@ server <- function(input, output, session) {
         }
       }
       DF_to_overwrite<-DF_to_overwrite %>% drop_na()
-      sheet_write("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
+      sheet_write("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=1964491178",
                   data = DF_to_overwrite, sheet = "Scrapper for R")
       
       
@@ -118,7 +118,7 @@ server <- function(input, output, session) {
       
       sheet_write("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=2013206145",
                   data = cbind(CMI_Date=rownames(values$CMI_Price_variation),values$CMI_Price_variation), sheet = "CMI Historical Data")
-      sheet_write("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
+      sheet_write("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=1964491178",
                   data =  cbind(ABC_Date=rownames(values$ABC_Price_variation),values$ABC_Price_variation), sheet = "ABC Historical Data")
     }
     ## -----------------------------
