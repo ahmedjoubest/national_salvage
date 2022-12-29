@@ -14,6 +14,7 @@ library(plotly)
 library(highcharter)
 library(ggplot2)
 library(googlesheets4)
+library(googledrive)
 library(sparkline)
 library(htmlwidgets)
 library(DT)
@@ -27,34 +28,41 @@ source("helpers.R")
 
 gs4_auth(cache = ".secrets", email = "salvage.test1@gmail.com")
 
-# Dropbox authentication ------------
-
-token <- drop_auth()
-# saveRDS(token, file = "token.rds")
-#token<- read_rds("token.rds")
-
-# Reading data  ------------
+# Reading and preparing Data  ------------
 
 CMI_ABC_reference_name<- read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
-                                    sheet = "Reference name all items")
+                                    sheet = "Reference name all items") %>% as.data.frame()
 
-CMI_Refrence_name<- Reference_Name_All_Items(CMI_ABC_reference_name)[[1]] %>% as.data.frame()
-ABC_Refrence_name<- Reference_Name_All_Items(CMI_ABC_reference_name)[[2]] %>% as.data.frame()
+CMI_Price_variation <- read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
+                                  sheet = "CMI Historical Data") %>% as.data.frame()
+rownames(CMI_Price_variation)<-CMI_Price_variation[,1]
+CMI_Price_variation<-CMI_Price_variation[,-1]
 
-for (i in 1:nrow(ABC_Refrence_name)){
-    ABC_Refrence_name[i,1] <- gsub("\n", "",ABC_Refrence_name[i,1]) 
-}
 
-for (i in 1:nrow(CMI_Refrence_name)){
-  CMI_Refrence_name[i,1] <- gsub("\n", "",CMI_Refrence_name[i,1]) 
-}
+ABC_Price_variation <- read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
+                                  sheet = "ABC Historical Data") %>% as.data.frame()
+rownames(ABC_Price_variation)<-ABC_Price_variation[,1]
+ABC_Price_variation<-ABC_Price_variation[,-1]
 
+Reference_Name <-Reference_Name_All_Items(CMI_ABC_reference_name)
+CMI_Refrence_name <- Reference_Name[[1]]
+ABC_Refrence_name <- Reference_Name[[2]]
+CMI_ABC_Df<- Reference_Name[[3]]
+
+
+# Dropbox authentication ------------
+
+#token <- drop_auth()
+# saveRDS(token, file = "token.rds")
+#token<- read_rds("token.rds")
 
 #drop_download("National_Salvage_V_Test/CMI_Histo_example.rds", dtoken = token, overwrite = T)
 #drop_download("National_Salvage_V_Test/ABC_Histo_example.rds", dtoken = token, overwrite = T)
 
-CMI_Price_variation <- read_rds("CMI_Histo_example.rds")
-ABC_Price_variation <- read_rds("ABC_Histo_example.rds")
+
+
+#CMI_Price_variation <- read_rds("CMI_Histo_example.rds")
+#ABC_Price_variation <- read_rds("ABC_Histo_example.rds")
 
 
 #drop_upload("CMI_Histo_example.rds",path = "National_Salvage_V_Test")

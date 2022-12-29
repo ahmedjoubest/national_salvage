@@ -13,9 +13,9 @@ server <- function(input, output, session) {
     ## -----------------------------
     
     # Correction 5-A
-    values$CMI_ABC_Df <-read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
-                                   sheet = "Sheet1")
-    
+#    values$CMI_ABC_Df <-read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
+#                                   sheet = "Sheet1")
+#    
     values$PDF_CMI <-pdf_text(input$PDF_file1$datapath)%>% 
       str_split("\n")
     values$PDF_ABC <-pdf_text(input$PDF_file2$datapath)%>% 
@@ -41,7 +41,6 @@ server <- function(input, output, session) {
     if (input$UpdateGS){
       CMI_Pricing <-read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
                                sheet = "CMI Platinum Pricing")
-      
       CMI_Pricing <- CMI_Pricing %>% select("Product")
       CMI_Pricing<- CMI_Pricing[!is.na(CMI_Pricing$Product),] 
       DF_to_overwrite  <- data.frame(matrix(nrow = nrow(CMI_Pricing), ncol = 2))
@@ -69,8 +68,8 @@ server <- function(input, output, session) {
     ## -----------------------------
     if(input$Update_HD){
       # ----
-      if(sum(rownames(CMI_Price_variation)[1:nrow(CMI_Price_variation)]==as.character(Sys.Date()))==1){
-        CMI_Price_variation <- CMI_Price_variation[-nrow(CMI_Price_variation),]
+      if(sum(rownames(values$CMI_Price_variation)[1:nrow(values$CMI_Price_variation)]==as.character(Sys.Date()))==1){
+        values$CMI_Price_variation <- values$CMI_Price_variation[-nrow(values$CMI_Price_variation),]
       }
       DF_CMI_stock <- data.frame(matrix(nrow = nrow(CMI_Df), ncol = 2))
       colnames(DF_CMI_stock)<- c( "Item Refrence name", as.character(Sys.Date()) )
@@ -85,10 +84,10 @@ server <- function(input, output, session) {
       DF_CMI_stock<-DF_CMI_stock %>% t() %>% as.data.frame()
       colnames(DF_CMI_stock) <- DF_CMI_stock[1, ]
       DF_CMI_stock<-DF_CMI_stock[-1,]
-      CMI_Price_variation<- rbind(CMI_Price_variation,DF_CMI_stock)
+      values$CMI_Price_variation<- rbind(values$CMI_Price_variation,DF_CMI_stock)
       # ------- 
-      if(sum(rownames(ABC_Price_variation)[1:nrow(ABC_Price_variation)]==as.character(Sys.Date()))==1){
-        ABC_Price_variation <- ABC_Price_variation[-nrow(ABC_Price_variation),]
+      if(sum(rownames(values$ABC_Price_variation)[1:nrow(values$ABC_Price_variation)]==as.character(Sys.Date()))==1){
+        values$ABC_Price_variation <- values$ABC_Price_variation[-nrow(values$ABC_Price_variation),]
       }
       DF_ABC_stock <- data.frame(matrix(nrow = nrow(ABC_Df), ncol = 2))
       colnames(DF_ABC_stock)<- c( "Item Refrence name", as.character(Sys.Date()) )
@@ -103,33 +102,31 @@ server <- function(input, output, session) {
       DF_ABC_stock<-DF_ABC_stock %>% t() %>% as.data.frame()
       colnames(DF_ABC_stock) <- DF_ABC_stock[1, ]
       DF_ABC_stock<-DF_ABC_stock[-1,]
-      ABC_Price_variation<- rbind(ABC_Price_variation,DF_ABC_stock)
+      values$ABC_Price_variation<- rbind(values$ABC_Price_variation,DF_ABC_stock)
       
       # ----
       
-      saveRDS(CMI_Price_variation, file = "CMI_Histo_example.rds")
-      saveRDS(ABC_Price_variation, file = "ABC_Histo_example.rds")
-      
-      drop_upload("CMI_Histo_example.rds",path = "National_Salvage_V_Test", dtoken = token)
-      drop_upload("ABC_Histo_example.rds",path = "National_Salvage_V_Test", dtoken = token)
+      #saveRDS(values$CMI_Price_variation, file = "CMI_Histo_example.rds")
+      #saveRDS(values$ABC_Price_variation, file = "ABC_Histo_example.rds")
+      #
+      #drop_upload("CMI_Histo_example.rds",path = "National_Salvage_V_Test", dtoken = token)
+      #drop_upload("ABC_Histo_example.rds",path = "National_Salvage_V_Test", dtoken = token)
       
       # ------
-      CMI_Date<-rownames(values$CMI_Price_variation)
-      ABC_Date<-rownames(values$ABC_Price_variation)
+      #CMI_Date<-rownames(values$CMI_Price_variation)
+      #ABC_Date<-rownames(values$ABC_Price_variation)
       
       sheet_write("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=2013206145",
-                  data = cbind(CMI_Date,values$CMI_Price_variation), sheet = "CMI Historical Data")
+                  data = cbind(CMI_Date=rownames(values$CMI_Price_variation),values$CMI_Price_variation), sheet = "CMI Historical Data")
       sheet_write("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=527635793",
-                  data =  cbind(ABC_Date,values$ABC_Price_variation), sheet = "ABC Historical Data")
+                  data =  cbind(ABC_Date=rownames(values$ABC_Price_variation),values$ABC_Price_variation), sheet = "ABC Historical Data")
     }
-    
     ## -----------------------------
-    
-    list <- Compare_fun(values$CMI_ABC_Df,CMI_Df,ABC_Df,CMI_Price_variation,ABC_Price_variation)
+    list <- Compare_fun(CMI_ABC_Df,CMI_Df,ABC_Df,values$CMI_Price_variation,values$ABC_Price_variation)
     values$Correspondance_Df <- list[[1]]
     values$non_Correspondance_Df <- list[[2]]
     values$DF_Best_Price <- list[[3]] 
-    
+  
   })
   
   #--------------------

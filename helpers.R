@@ -142,18 +142,44 @@ ABC_fun<-function(PDF_ABC){
   return(ABC_Df)
 }
 
-Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df,CMI_Price_variation,ABC_Price_variation){
-  
-  CMI_ABC_Df <- CMI_ABC_Df[!is.na(CMI_ABC_Df$Items),]
-  
-  colnames(CMI_ABC_Df)<- c("CMI Items","Commun Item Names","ABC Items")
-  
-  for (i in 1:nrow(CMI_ABC_Df)){
-    for (j in 1:length(CMI_ABC_Df)){
-      CMI_ABC_Df[i,j] <- gsub("\n", "",CMI_ABC_Df[i,j]) 
+Reference_Name_All_Items<- function(CMI_ABC_reference_name){
+  ##-----
+  for (i in 1:nrow(CMI_ABC_reference_name)){
+    for (j in 1:ncol(CMI_ABC_reference_name)){
+      CMI_ABC_reference_name[i,j] <- gsub("\n", "",CMI_ABC_reference_name[i,j]) 
     }
   }
   
+  CMI_ABC_reference_name<-CMI_ABC_reference_name[,-3]
+  CMI_Refrence_name<-CMI_ABC_reference_name[,c(1,2)] %>% drop_na()
+  colnames(CMI_Refrence_name) <- CMI_Refrence_name[1, ]
+  CMI_Refrence_name<-CMI_Refrence_name[-1,]
+  ABC_Refrence_name<-CMI_ABC_reference_name[,c(3,4)] %>% drop_na()
+  colnames(ABC_Refrence_name) <- ABC_Refrence_name[1, ]
+  ABC_Refrence_name<-ABC_Refrence_name[-1,]
+  
+  CMI_ABC_Df = data.frame(matrix(nrow=nrow(CMI_ABC_reference_name), ncol = 3)) 
+  colnames(CMI_ABC_Df)<- c("CMI Items","Commun Item Names","ABC Items")
+  
+  for(i in 1:nrow(CMI_Refrence_name)){
+    for(j in 1:nrow(ABC_Refrence_name)){
+      if(CMI_Refrence_name$`Refrence name`[i]==ABC_Refrence_name$`Refrence name`[j]){
+        CMI_ABC_Df$`CMI Items`[i]=CMI_Refrence_name$`Item name (in the PDF's)`[i]
+        CMI_ABC_Df$`ABC Items`[i]=ABC_Refrence_name$`Item name (in the PDF's)`[j]
+        CMI_ABC_Df$`Commun Item Names`[i]=CMI_Refrence_name$`Refrence name`[i]
+      }
+    }
+  }
+  
+  CMI_ABC_Df <- CMI_ABC_Df %>% drop_na()
+  
+  return(list(CMI_Refrence_name,ABC_Refrence_name,CMI_ABC_Df))
+  
+}
+
+Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df,CMI_Price_variation,ABC_Price_variation){
+  
+  ##----
   Correspondance_Df=data.frame(matrix(nrow=nrow(CMI_ABC_Df), ncol = 3)) 
   colnames(Correspondance_Df) = c("CMI Items","ABC Items", "Commun Item Names")
   
@@ -210,39 +236,32 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df,CMI_Price_variation,ABC_Price_var
     } else {
       DF_Best_Price$`Best Purchaser`[i]="ABC"
     }
-
+    
     for(j in 1:ncol(CMI_Price_variation)){
       if(!is.na(colnames(CMI_Price_variation)[j])){
-      if(DF_Best_Price$`Item Name`[i]==colnames(CMI_Price_variation)[j]){
-        DF_Best_Price$`CMI Variation`[i]=spk_chr(CMI_Price_variation[,colnames(CMI_Price_variation)[j]], type = 'line')
+        if(DF_Best_Price$`Item Name`[i]==colnames(CMI_Price_variation)[j]){
+          DF_Best_Price$`CMI Variation`[i]=spk_chr(CMI_Price_variation[,colnames(CMI_Price_variation)[j]], type = 'line')
+        }
       }
-    }
     }
     for(j in 1:ncol(ABC_Price_variation)){
       if(!is.na(colnames(ABC_Price_variation)[j])){
-      if(DF_Best_Price$`Item Name`[i]==colnames(ABC_Price_variation)[j]){
-        DF_Best_Price$`ABC Variation`[i]= spk_chr(ABC_Price_variation[,colnames(ABC_Price_variation)[j]], type = 'line')
+        if(DF_Best_Price$`Item Name`[i]==colnames(ABC_Price_variation)[j]){
+          DF_Best_Price$`ABC Variation`[i]= spk_chr(ABC_Price_variation[,colnames(ABC_Price_variation)[j]], type = 'line')
+        }
       }
     }
-    }
   }
-
-  return(list(Correspondance_Df,non_Correspondance_Df,DF_Best_Price))
+  
+  return(list(Correspondance_Df=Correspondance_Df,
+              non_Correspondance_Df =non_Correspondance_Df,
+              DF_Best_Price = DF_Best_Price
+  )
+  )
 }
 
-Reference_Name_All_Items<- function(CMI_ABC_reference_name){
-  
-  CMI_ABC_reference_name<-CMI_ABC_reference_name[,-3]
-  CMI_Refrence_name<-CMI_ABC_reference_name[,c(1,2)] %>% drop_na()
-  colnames(CMI_Refrence_name) <- CMI_Refrence_name[1, ]
-  CMI_Refrence_name<-CMI_Refrence_name[-1,]
-  ABC_Refrence_name<-CMI_ABC_reference_name[,c(3,4)] %>% drop_na()
-  colnames(ABC_Refrence_name) <- ABC_Refrence_name[1, ]
-  ABC_Refrence_name<-ABC_Refrence_name[-1,]
-  
-  return(list(CMI_Refrence_name,ABC_Refrence_name))
-  
-}
+
+
 
 
 
