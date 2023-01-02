@@ -1,4 +1,5 @@
 ui <- fluidPage(
+useShinyalert(), 
   tags$style(HTML("
     .tabbable > .nav > li > a                  {background-color: #F5F5F5;  color:black}
     .tabbable > .nav                 {background-color: #F5F5F5;  color:black}

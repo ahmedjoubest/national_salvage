@@ -13,9 +13,9 @@ server <- function(input, output, session) {
     ## -----------------------------
     
     # Correction 5-A
-#    values$CMI_ABC_Df <-read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=1964491178",
-#                                   sheet = "Sheet1")
-#    
+    #    values$CMI_ABC_Df <-read_sheet("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=1964491178",
+    #                                   sheet = "Sheet1")
+    #   
     values$PDF_CMI <-pdf_text(input$PDF_file1$datapath)%>% 
       str_split("\n")
     values$PDF_ABC <-pdf_text(input$PDF_file2$datapath)%>% 
@@ -25,17 +25,17 @@ server <- function(input, output, session) {
     ABC_Df <- ABC_fun(values$PDF_ABC)
     
     ## -----------------------------
-    
-    for( i in 1:nrow(CMI_Price_variation)){
-      rownames(CMI_Price_variation)[i]=i
-      rownames(ABC_Price_variation)[i]=i
-      
-    }
-    
-    for( i in 1:nrow(ABC_Price_variation)){
-      rownames(CMI_Price_variation)[i]=as.character(Sys.Date()-128+i)
-      rownames(ABC_Price_variation)[i]=as.character(Sys.Date()-128+i)
-    }
+    #
+    #for( i in 1:nrow(CMI_Price_variation)){
+    #  rownames(CMI_Price_variation)[i]=i
+    #  rownames(ABC_Price_variation)[i]=i
+    #  
+    #}
+    #
+    #for( i in 1:nrow(ABC_Price_variation)){
+    #  rownames(CMI_Price_variation)[i]=as.character(Sys.Date()-128+i)
+    #  rownames(ABC_Price_variation)[i]=as.character(Sys.Date()-128+i)
+    #}
     
     ## -----------------------------
     if (input$UpdateGS){
@@ -71,40 +71,239 @@ server <- function(input, output, session) {
       if(sum(rownames(values$CMI_Price_variation)[1:nrow(values$CMI_Price_variation)]==as.character(Sys.Date()))==1){
         values$CMI_Price_variation <- values$CMI_Price_variation[-nrow(values$CMI_Price_variation),]
       }
-      DF_CMI_stock <- data.frame(matrix(nrow = nrow(CMI_Df), ncol = 2))
-      colnames(DF_CMI_stock)<- c( "Item Refrence name", as.character(Sys.Date()) )
-      for (i in 1: nrow(DF_CMI_stock)){
+      
+      ## Adding new referance names to historical data ------------------
+      
+      if(nrow(CMI_Refrence_name)>ncol(values$CMI_Price_variation)){
+        for(i in 1:nrow(CMI_Refrence_name)){
+          if (sum(colnames(values$CMI_Price_variation)[1:ncol(values$CMI_Price_variation)]==CMI_Refrence_name$`Refrence name`[i])==0){
+            values$CMI_Price_variation<- values$CMI_Price_variation %>% 
+              mutate(newcol=NA)
+            colnames(values$CMI_Price_variation)[ncol(values$CMI_Price_variation)]=paste0(CMI_Refrence_name$`Refrence name`[i])
+          }
+          
+        } 
+      }
+      
+      ##  if an item name from the pdf doesn't match with referance name sheet item's name------------------
+      
+      DF_CMI_stock <- data.frame(matrix(nrow = ncol(values$CMI_Price_variation), ncol = 2))
+      colnames(DF_CMI_stock)<- c( "Referance name", as.character(Sys.Date()) )
+      
+      
+      for (i in 1: nrow(CMI_Refrence_name)){
         for (j in 1: nrow(CMI_Df)){
           if (CMI_Df$`Item name`[j]==CMI_Refrence_name$`Item name (in the PDF's)`[i]){
             DF_CMI_stock[i,1]= CMI_Refrence_name$`Refrence name`[i]
             DF_CMI_stock[i,2]=CMI_Df$`Daily price $`[j]
           }
-        }
+        } 
       }
-      DF_CMI_stock<-DF_CMI_stock %>% t() %>% as.data.frame()
+      
+      DF_CMI_stock=DF_CMI_stock[!is.na(DF_CMI_stock$`Referance name`),] 
+      
+      CMI_Missing_from_PDf <- data.frame(matrix(nrow = ncol(values$CMI_Price_variation), ncol = 3))
+      colnames(CMI_Missing_from_PDf) = c("`Item name ","Referance name", as.character(Sys.Date()))
+      
+      
+      for (i in 1: nrow(CMI_Missing_from_PDf)){
+        for (j in 1: nrow(CMI_Refrence_name)){
+          if (sum(CMI_Df$`Item name`[1:nrow(CMI_Df)]==CMI_Refrence_name$`Item name (in the PDF's)`[j])==0){
+            CMI_Missing_from_PDf[j,1]= CMI_Refrence_name$`Item name (in the PDF's)`[j]
+            CMI_Missing_from_PDf[j,2]= CMI_Refrence_name$`Refrence name`[j]
+          }
+        } 
+      } 
+      CMI_Missing_from_PDf=CMI_Missing_from_PDf[!is.na(CMI_Missing_from_PDf[,1]),] 
+      
+      DF_CMI_stock<-rbind(DF_CMI_stock,CMI_Missing_from_PDf[,-1])
+      
+      DF_CMI_stock<-DF_CMI_stock  %>%  t() %>% as.data.frame()
       colnames(DF_CMI_stock) <- DF_CMI_stock[1, ]
       DF_CMI_stock<-DF_CMI_stock[-1,]
       values$CMI_Price_variation<- rbind(values$CMI_Price_variation,DF_CMI_stock)
+      
+      ##------------
+      
+      
+      CMI_NewItems_in_PDf <- data.frame(matrix(nrow = ncol(values$CMI_Price_variation), ncol = 1))
+      colnames(CMI_NewItems_in_PDf) = "Item name"
+      
+      for (i in 1: nrow(CMI_NewItems_in_PDf)){
+        for (j in 1: nrow(CMI_Df)){
+          if (sum(CMI_Refrence_name$`Item name (in the PDF's)`[1:nrow(CMI_Refrence_name)]==CMI_Df$`Item name`[j])==0){
+            # CMI_Missing_from_PDf[j,1]= CMI_Refrence_name$`Item name (in the PDF's)`[j]
+            CMI_NewItems_in_PDf[j,1]=CMI_Df$`Item name`[j]
+          }
+        } 
+      } 
+      CMI_NewItems_in_PDf=CMI_NewItems_in_PDf[!is.na(CMI_NewItems_in_PDf$`Item name`),] %>% as.data.frame()
+      
+      
       # ------- 
       if(sum(rownames(values$ABC_Price_variation)[1:nrow(values$ABC_Price_variation)]==as.character(Sys.Date()))==1){
         values$ABC_Price_variation <- values$ABC_Price_variation[-nrow(values$ABC_Price_variation),]
       }
-      DF_ABC_stock <- data.frame(matrix(nrow = nrow(ABC_Df), ncol = 2))
-      colnames(DF_ABC_stock)<- c( "Item Refrence name", as.character(Sys.Date()) )
-      for (i in 1: nrow(DF_ABC_stock)){
+      ## Adding new referance names to historical data ------------------
+      if(nrow(ABC_Refrence_name)>ncol(values$ABC_Price_variation)){
+        for(i in 1:nrow(ABC_Refrence_name)){
+          if (sum(colnames(values$ABC_Price_variation)[1:ncol(values$ABC_Price_variation)]==ABC_Refrence_name$`Refrence name`[i])==0){
+            values$ABC_Price_variation<- values$ABC_Price_variation %>% 
+              mutate(newcol=NA)
+            colnames(values$ABC_Price_variation)[ncol(values$ABC_Price_variation)]=paste0(ABC_Refrence_name$`Refrence name`[i])
+          }
+          
+        } 
+      }
+      
+      ##  if an item name from the pdf doesn't match with referance name sheet item's name------------------
+      
+      DF_ABC_stock <- data.frame(matrix(nrow = ncol(values$ABC_Price_variation), ncol = 2))
+      colnames(DF_ABC_stock)<- c( "Referance name", as.character(Sys.Date()) )
+      
+      
+      for (i in 1: nrow(ABC_Refrence_name)){
         for (j in 1: nrow(ABC_Df)){
           if (ABC_Df$`Item name`[j]==ABC_Refrence_name$`Item name (in the PDF's)`[i]){
             DF_ABC_stock[i,1]= ABC_Refrence_name$`Refrence name`[i]
             DF_ABC_stock[i,2]=ABC_Df$`Daily price $`[j]
           }
-        }
+        } 
       }
-      DF_ABC_stock<-DF_ABC_stock %>% t() %>% as.data.frame()
+      
+      DF_ABC_stock=DF_ABC_stock[!is.na(DF_ABC_stock$`Referance name`),] 
+      
+      ABC_Missing_from_PDf <- data.frame(matrix(nrow = ncol(values$ABC_Price_variation), ncol = 3))
+      colnames(ABC_Missing_from_PDf) = c("Item  name", "Referance name", as.character(Sys.Date()))
+      
+      
+      for (i in 1: nrow(ABC_Missing_from_PDf)){
+        for (j in 1: nrow(ABC_Refrence_name)){
+          if (sum(ABC_Df$`Item name`[1:nrow(ABC_Df)]==ABC_Refrence_name$`Item name (in the PDF's)`[j])==0){
+            ABC_Missing_from_PDf[j,1]= ABC_Refrence_name$`Item name (in the PDF's)`[j]
+            ABC_Missing_from_PDf[j,2]= ABC_Refrence_name$`Refrence name`[j]
+          }
+        } 
+      } 
+      ABC_Missing_from_PDf=ABC_Missing_from_PDf[!is.na(ABC_Missing_from_PDf$`Referance name`),] 
+      
+      DF_ABC_stock<-rbind(DF_ABC_stock,ABC_Missing_from_PDf[,-1])
+      
+      DF_ABC_stock<-DF_ABC_stock  %>%  t() %>% as.data.frame()
       colnames(DF_ABC_stock) <- DF_ABC_stock[1, ]
       DF_ABC_stock<-DF_ABC_stock[-1,]
       values$ABC_Price_variation<- rbind(values$ABC_Price_variation,DF_ABC_stock)
       
-      # ----
+      ##------------
+      
+      ABC_NewItems_in_PDf <- data.frame(matrix(nrow = ncol(values$ABC_Price_variation), ncol = 1))
+      colnames(ABC_NewItems_in_PDf) = "Item name"
+      
+      for (i in 1: nrow(ABC_NewItems_in_PDf)){
+        for (j in 1: nrow(ABC_Df)){
+          if (sum(ABC_Refrence_name$`Item name (in the PDF's)`[1:nrow(ABC_Refrence_name)]==ABC_Df$`Item name`[j])==0){
+            # ABC_Missing_from_PDf[j,1]= ABC_Refrence_name$`Item name (in the PDF's)`[j]
+            ABC_NewItems_in_PDf[j,1]=ABC_Df$`Item name`[j]
+          }
+        } 
+      } 
+      ABC_NewItems_in_PDf=ABC_NewItems_in_PDf[!is.na(ABC_NewItems_in_PDf$`Item name`),] %>% as.data.frame()
+      
+      
+      if(nrow(CMI_Missing_from_PDf)>0 |nrow(ABC_Missing_from_PDf)>0){
+        shinyalert( "Warning messages!",
+                    html = TRUE,
+                    text =  tagList(
+                      fluidRow(
+                        HTML(
+                          paste("<font color=\"#FF0000\"><p> <b> Please Update Referance name's Sheet  </b></p></font>")),
+                        br(),
+                        column(3,
+                               HTML(
+                                 paste("<p> <b>  Missing items from CMI pdf: </b></p>")),
+                               br(),
+                               HTML(paste0( "
+                     <ul>",CMI_Missing_from_PDf[,1],"</ul>"
+                               ))
+                        ),
+                        column(3,
+                               HTML(
+                                 paste("<p> <b>  Missing items from CMI Referance name: </b></p>")),
+                               br(),
+                               HTML(paste0( "
+                     <ul>",CMI_NewItems_in_PDf[,1],"</ul>"
+                               ))
+                        ),
+                        column(3,
+                               HTML(
+                                 paste("<p> <b>  Missing items from ABC pdf: </b></p>")),
+                               br(),
+                               HTML(paste0( "
+                     <ul>",ABC_Missing_from_PDf[,1],"</ul>"
+                               )
+                               )
+                        ),
+                        column(3,
+                               HTML(
+                                 paste("<p> <b>  Missing items from ABC Referance name: </b></p>")),
+                               br(),
+                               HTML(paste0( "
+                     <ul>",ABC_NewItems_in_PDf[,1],"</ul>"
+                               ))
+                        )
+                      )), type = "warning", size = "m", animation = TRUE)
+      } else  if(nrow(CMI_Missing_from_PDf)>0){
+        shinyalert( "Warning messages!",
+                    html = TRUE,
+                    text =  tagList(
+                      fluidRow(
+                        HTML(
+                          paste("<font color=\"#FF0000\"><p> <b> Please Update Referance name's Sheet  </b></p></font>")),
+                        br(),
+                        column(3,
+                               HTML(
+                                 paste("<p> <b>  Missing items from CMI pdf: </b></p>")),
+                               br(),
+                               HTML(paste0( "
+                     <ul>",CMI_Missing_from_PDf[,1],"</ul>"
+                               ))
+                        ),
+                        column(3,
+                               HTML(
+                                 paste("<p> <b>  Missing items from CMI Referance name: </b></p>")),
+                               br(),
+                               HTML(paste0( "
+                     <ul>",CMI_NewItems_in_PDf[,1],"</ul>"
+                               ))
+                        ))
+                    ), type = "warning", animation = TRUE)
+      } else  if(nrow(ABC_Missing_from_PDf)>0){
+        shinyalert( "Warning messages!",
+                    html = TRUE,
+                    text =  tagList(
+                      fluidRow(
+                        HTML(
+                          paste("<font color=\"#FF0000\"><p> <b> Please Update Referance name's Sheet  </b></p></font>")),
+                        br(),
+                        column(3,
+                               HTML(
+                                 paste("<p> <b>  Missing items from ABC pdf: </b></p>")),
+                               br(),
+                               HTML(paste0( "
+                     <ul>",ABC_Missing_from_PDf[,1],"</ul>"
+                               ))
+                        ),
+                        column(3,
+                               HTML(
+                                 paste("<p> <b>  Missing items from ABC Referance name: </b></p>")),
+                               br(),
+                               HTML(paste0( "
+                     <ul>",ABC_NewItems_in_PDf[,1],"</ul>"
+                               ))
+                        ))
+                    ), type = "warning", animation = TRUE)
+      }
+      
       
       #saveRDS(values$CMI_Price_variation, file = "CMI_Histo_example.rds")
       #saveRDS(values$ABC_Price_variation, file = "ABC_Histo_example.rds")
@@ -116,17 +315,24 @@ server <- function(input, output, session) {
       #CMI_Date<-rownames(values$CMI_Price_variation)
       #ABC_Date<-rownames(values$ABC_Price_variation)
       
-      sheet_write("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=2013206145",
+      sheet_write("https://docs.google.com/spreadsheets/d/1T1w0sylQjtqXuonJTgMwkYoNwB3rW2r8_3SE1w8L0eg/edit#gid=1051141236",
                   data = cbind(CMI_Date=rownames(values$CMI_Price_variation),values$CMI_Price_variation), sheet = "CMI Historical Data")
-      sheet_write("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=1964491178",
+      sheet_write("https://docs.google.com/spreadsheets/d/1T1w0sylQjtqXuonJTgMwkYoNwB3rW2r8_3SE1w8L0eg/edit#gid=1051141236",
                   data =  cbind(ABC_Date=rownames(values$ABC_Price_variation),values$ABC_Price_variation), sheet = "ABC Historical Data")
+      
+     # sheet_write("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=2013206145",
+     #             data = cbind(CMI_Date=rownames(values$CMI_Price_variation),values$CMI_Price_variation), sheet = "CMI Historical Data")
+     # sheet_write("https://docs.google.com/spreadsheets/d/1sqZxzGNsn7Zoj0a_1Kam9fZy0aquleIqEjD067qZG1M/edit#gid=1964491178",
+     #             data =  cbind(ABC_Date=rownames(values$ABC_Price_variation),values$ABC_Price_variation), sheet = "ABC Historical Data")
+      
+      
     }
     ## -----------------------------
     list <- Compare_fun(CMI_ABC_Df,CMI_Df,ABC_Df,values$CMI_Price_variation,values$ABC_Price_variation)
     values$Correspondance_Df <- list[[1]]
     values$non_Correspondance_Df <- list[[2]]
     values$DF_Best_Price <- list[[3]] 
-  
+    
   })
   
   #--------------------
@@ -201,7 +407,7 @@ server <- function(input, output, session) {
       hc_add_series(name="CMI Price",
                     data = values$DF_Best_Price[,2]) %>%
       hc_add_series(name="ABC Price",
-                    data = values$DF_Best_Price[,3])%>%
+                    data = values$DF_Best_Price[,4])%>%
       hc_colors(c("#e9724d", "#0000FF"))  %>% 
       hc_tooltip(shared = TRUE,
                  crosshairs = TRUE,
