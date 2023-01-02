@@ -14,10 +14,13 @@ library(plotly)
 library(highcharter)
 library(ggplot2)
 library(googlesheets4)
+library(googledrive)
 library(sparkline)
 library(htmlwidgets)
 library(DT)
 library(rdrop2)
+library(shinyalert)
+
 
 # Sourcing  ------------------------------
 
@@ -28,35 +31,25 @@ source("helpers.R")
 #"https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=1594085636"
 gs4_auth(cache = ".secrets", email = "salvage.test1@gmail.com")
 
-# Dropbox authentication ------------
 
-#token <- drop_auth()
-#saveRDS(token, file = "token.rds")
-#token<- read_rds("token.rds")
 
-# Reading data  ------------
 
 CMI_ABC_reference_name<- read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
                                     sheet = "Reference name all items")
 
-CMI_Refrence_name<- Reference_Name_All_Items(CMI_ABC_reference_name)[[1]] %>% as.data.frame()
-ABC_Refrence_name<- Reference_Name_All_Items(CMI_ABC_reference_name)[[2]] %>% as.data.frame()
+CMI_Price_variation <- read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
+                                  sheet = "CMI Historical Data") %>% as.data.frame()
+ABC_Price_variation <- read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
+                                  sheet = "ABC Historical Data") %>% as.data.frame()
 
-for (i in 1:nrow(ABC_Refrence_name)){
-    ABC_Refrence_name[i,1] <- gsub("\n", "",ABC_Refrence_name[i,1]) 
-}
+rownames(CMI_Price_variation)<-CMI_Price_variation[,1]
+CMI_Price_variation<-CMI_Price_variation[,-1]
 
-for (i in 1:nrow(CMI_Refrence_name)){
-  CMI_Refrence_name[i,1] <- gsub("\n", "",CMI_Refrence_name[i,1]) 
-}
+rownames(ABC_Price_variation)<-ABC_Price_variation[,1]
+ABC_Price_variation<-ABC_Price_variation[,-1]
 
+Reference_Name <-Reference_Name_All_Items(CMI_ABC_reference_name)
+CMI_Refrence_name <- Reference_Name[[1]]
+ABC_Refrence_name <- Reference_Name[[2]]
+CMI_ABC_Df<- Reference_Name[[3]]
 
-#drop_download("National_Salvage/CMI_Price_variation.rds", dtoken = token, overwrite = T)
-#drop_download("National_Salvage/CMI_Price_variation.rds", dtoken = token, overwrite = T)
-
-CMI_Price_variation <- read_rds("CMI_Price_variation.rds")
-ABC_Price_variation <- read_rds("CMI_Price_variation.rds")
-
-
-#drop_upload("CMI_Price_variation.rds",path = "National_Salvage")
-#drop_upload("CMI_Price_variation.rds",path = "National_Salvage")

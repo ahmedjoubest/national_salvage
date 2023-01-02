@@ -1,4 +1,5 @@
 ui <- fluidPage(
+  useShinyalert(), 
   tags$style(HTML("
     .tabbable > .nav > li > a                  {background-color: #F5F5F5;  color:black}
     .tabbable > .nav                 {background-color: #F5F5F5;  color:black}
@@ -68,21 +69,6 @@ ui <- fluidPage(
         )
       ),
       tabPanel(
-        "More details",
-        conditionalPanel(
-          condition = "input.Run>=1",
-          h3("Corresponding items:"), br(),
-          tags$p("This data table shows the items that matches between ABC and CMI"),
-          width=12,DT::dataTableOutput('Correspondance_Df')%>% 
-            withSpinner(color="#3C8DBC",type=4, size = 0.5),br(),
-          h3("Non Corresponding Data Frame"), br(),
-          tags$p("You can find below the items that don't match between the two uploaded PDF's"),
-          width=12,DT::dataTableOutput('non_Correspondance_Df') %>% 
-            withSpinner(color="#3C8DBC",type=4, size = 0.5),
-          br(),br()
-        )
-      ),
-      tabPanel(
         "CMI & ABC Price Variation",
         conditionalPanel(
           condition = "input.Run>=1",
@@ -115,7 +101,22 @@ ui <- fluidPage(
                  , style = "margin-bottom: 10px;"
                  , style = "margin-top: -10px;")
           )
-      ))
+      )),
+      tabPanel(
+        "More details",
+        conditionalPanel(
+          condition = "input.Run>=1",
+          h3("Corresponding items:"), br(),
+          tags$p("This data table shows the items that matches between ABC and CMI"),
+          width=12,DT::dataTableOutput('Correspondance_Df')%>% 
+            withSpinner(color="#3C8DBC",type=4, size = 0.5),br(),
+          h3("Non Corresponding Data Frame"), br(),
+          tags$p("You can find below the items that don't match between the two uploaded PDF's"),
+          width=12,DT::dataTableOutput('non_Correspondance_Df') %>% 
+            withSpinner(color="#3C8DBC",type=4, size = 0.5),
+          br(),br()
+        )
+      )
     ),
     
     width = 9)
