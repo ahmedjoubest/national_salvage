@@ -12,26 +12,25 @@ server <- function(input, output, session) {
   )
   
   observeEvent(input$Run,{
- # browser()
- # CMI_ABC_Reference_name<- read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
- #                                     sheet = "Reference name all items")
- # 
- # CMI_Price_variation <- read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
- #                                   sheet = "CMI Historical Data") %>% as.data.frame()
- # ABC_Price_variation <- read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
- #                                   sheet = "ABC Historical Data") %>% as.data.frame()
- # 
- # 
- # rownames(CMI_Price_variation)<-CMI_Price_variation[,1]
- # CMI_Price_variation<-CMI_Price_variation[,-1]
- # 
- # rownames(ABC_Price_variation)<-ABC_Price_variation[,1]
- # ABC_Price_variation<-ABC_Price_variation[,-1]
- # 
- # Reference_Name <-Reference_Name_All_Items(CMI_ABC_Reference_name)
- # CMI_Reference_name <- Reference_Name[[1]]
- # ABC_Reference_name <- Reference_Name[[2]]
- # CMI_ABC_Df<- Reference_Name[[3]]
+    
+    CMI_ABC_Reference_name <<- read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
+                                        sheet = "Reference name all items")
+    
+    CMI_Price_variation <<- read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
+                                      sheet = "CMI Historical Data") %>% as.data.frame()
+    ABC_Price_variation  <<-  read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
+                                      sheet = "ABC Historical Data") %>% as.data.frame()
+    
+    rownames(CMI_Price_variation)  <<- CMI_Price_variation[,1]
+    CMI_Price_variation  <<- CMI_Price_variation[,-1]
+    
+    rownames(ABC_Price_variation) <<- ABC_Price_variation[,1]
+    ABC_Price_variation  <<- ABC_Price_variation[,-1]
+    
+    Reference_Name  <<- Reference_Name_All_Items(CMI_ABC_Reference_name)
+    CMI_Reference_name  <<-  Reference_Name[[1]]
+    ABC_Reference_name  <<-  Reference_Name[[2]]
+    CMI_ABC_Df  <<-  Reference_Name[[3]]
 
     ## -----------------------------
     values$PDF_CMI <-pdf_text(input$PDF_file1$datapath)%>% 
@@ -233,8 +232,8 @@ server <- function(input, output, session) {
       ABC_NewItems_in_PDf=ABC_NewItems_in_PDf[!is.na(ABC_NewItems_in_PDf$`Item name`),] %>% as.data.frame()
       
       
-      ## Warinings -----------
-      browser()
+      ## Warnings -----------
+      
       if(nrow(CMI_Missing_from_PDf)>0 ){
         CMI_Missing_htlm <- sapply(
           1:nrow(CMI_Missing_from_PDf),
