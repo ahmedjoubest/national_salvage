@@ -77,11 +77,11 @@ ui <- fluidPage(
         tags$p("The following plot shows the price historical data variation over time for each purchaser:"),
         br(),
         fluidRow(
-          column(width=6,selectInput("CMI_referance", "CMI Item name:", CMI_Refrence_name[,2])
+          column(width=6,selectInput("CMI_referance", "CMI Item name:", CMI_Reference_name[,2])
                  , align = "center"
                  , style = "margin-bottom: 10px;"
                  , style = "margin-top: -10px;"),
-          column(width=6,selectInput("ABC_referance", "ABC Item name:", ABC_Refrence_name[,2])
+          column(width=6,selectInput("ABC_referance", "ABC Item name:", ABC_Reference_name[,2])
                  , align = "center"
                  , style = "margin-bottom: 10px;"
                  , style = "margin-top: -10px;")

@@ -152,29 +152,29 @@ Reference_Name_All_Items<- function(CMI_ABC_Reference_name){
   }
   
   CMI_ABC_Reference_name<-CMI_ABC_Reference_name[,-3]
-  CMI_Refrence_name<-CMI_ABC_Reference_name[,c(1,2)] %>% drop_na()
-  colnames(CMI_Refrence_name) <- CMI_Refrence_name[1, ]
-  CMI_Refrence_name<-CMI_Refrence_name[-1,]
-  ABC_Refrence_name<-CMI_ABC_Reference_name[,c(3,4)] %>% drop_na()
-  colnames(ABC_Refrence_name) <- ABC_Refrence_name[1, ]
-  ABC_Refrence_name<-ABC_Refrence_name[-1,]
+  CMI_Reference_name<-CMI_ABC_Reference_name[,c(1,2)] %>% drop_na()
+  colnames(CMI_Reference_name) <- CMI_Reference_name[1, ]
+  CMI_Reference_name<-CMI_Reference_name[-1,]
+  ABC_Reference_name<-CMI_ABC_Reference_name[,c(3,4)] %>% drop_na()
+  colnames(ABC_Reference_name) <- ABC_Reference_name[1, ]
+  ABC_Reference_name<-ABC_Reference_name[-1,]
   
   CMI_ABC_Df = data.frame(matrix(nrow=nrow(CMI_ABC_Reference_name), ncol = 3)) 
   colnames(CMI_ABC_Df)<- c("CMI Items","Commun Item Names","ABC Items")
   
-  for(i in 1:nrow(CMI_Refrence_name)){
-    for(j in 1:nrow(ABC_Refrence_name)){
-      if(CMI_Refrence_name$`Refrence name`[i]==ABC_Refrence_name$`Refrence name`[j]){
-        CMI_ABC_Df$`CMI Items`[i]=CMI_Refrence_name$`Item name (in the PDF's)`[i]
-        CMI_ABC_Df$`ABC Items`[i]=ABC_Refrence_name$`Item name (in the PDF's)`[j]
-        CMI_ABC_Df$`Commun Item Names`[i]=CMI_Refrence_name$`Refrence name`[i]
+  for(i in 1:nrow(CMI_Reference_name)){
+    for(j in 1:nrow(ABC_Reference_name)){
+      if(CMI_Reference_name$`Reference name`[i]==ABC_Reference_name$`Reference name`[j]){
+        CMI_ABC_Df$`CMI Items`[i]=CMI_Reference_name$`Item name (in the PDF's)`[i]
+        CMI_ABC_Df$`ABC Items`[i]=ABC_Reference_name$`Item name (in the PDF's)`[j]
+        CMI_ABC_Df$`Commun Item Names`[i]=CMI_Reference_name$`Reference name`[i]
       }
     }
   }
   
   CMI_ABC_Df <- CMI_ABC_Df %>% drop_na()
   
-  return(list(CMI_Refrence_name,ABC_Refrence_name,CMI_ABC_Df))
+  return(list(CMI_Reference_name,ABC_Reference_name,CMI_ABC_Df))
   
 }
 
