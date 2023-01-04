@@ -80,8 +80,8 @@ ui <- fluidPage(
             column(width=6,
                    pickerInput(
                      inputId = "CMI_referance",label = "CMI Item name:",
-                     choices = CMI_Reference_name[,2],
-                     selected = c(CMI_Reference_name[1,2],CMI_Reference_name[2,2]),
+                     choices = c(),
+                     selected = c(),
                      multiple = T,
                      options = pickerOptions(actionsBox = T, liveSearch = T, size = 5,
                                              dropdownAlignRight = T)

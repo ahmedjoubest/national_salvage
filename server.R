@@ -22,6 +22,8 @@ server <- function(input, output, session) {
     ABC_Price_variation  <<-  read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
                                       sheet = "ABC Historical Data") %>% as.data.frame()
     
+    # update picker 
+    
     rownames(CMI_Price_variation)  <<- CMI_Price_variation[,1]
     CMI_Price_variation  <<- CMI_Price_variation[,-1]
     
