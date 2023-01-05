@@ -1,5 +1,7 @@
 ui <- fluidPage(
   useShinyalert(), 
+  # Custom loading pop up with css classes
+  tags$head(tags$style(HTML_css())),
   tags$style(HTML("
     .tabbable > .nav > li > a                  {background-color: #F5F5F5;  color:black}
     .tabbable > .nav                 {background-color: #F5F5F5;  color:black}
@@ -80,6 +82,7 @@ ui <- fluidPage(
             column(width=6,
                    pickerInput(
                      inputId = "CMI_referance",label = "CMI Item name:",
+                     #choices = CMI_Reference_name[,2],
                      choices = c(),
                      selected = c(),
                      multiple = T,
@@ -91,8 +94,9 @@ ui <- fluidPage(
             column(width=6,
                    pickerInput(
                      inputId = "ABC_referance",label = "ABC Item name:",
-                     choices = ABC_Reference_name[,2],
-                     selected = c(ABC_Reference_name[1,2],ABC_Reference_name[2,2]),
+                     #choices = ABC_Reference_name[,2],
+                     choices = c(),
+                     selected = c(),
                      multiple = T,
                      options = pickerOptions(actionsBox = T, liveSearch = T, size = 5,
                                              dropdownAlignRight = T)

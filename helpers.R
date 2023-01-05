@@ -61,7 +61,6 @@ CMI_fun<-function(PDF_CMI){
 }
 
 ABC_fun<-function(PDF_ABC){
-  
   ABC_char_length <- data.frame(matrix(nrow = length(PDF_ABC[[1]]), ncol = 4))
   colnames(ABC_char_length)=c("ID","num_char", "num_space","num_char_nospace")
   ABC_char_length<- ABC_char_length%>% 
@@ -114,8 +113,8 @@ ABC_fun<-function(PDF_ABC){
         }
       }
     } else {
-      PDF_ABC_Left_Side[[i]] <- str_match(ABC[[i]], "^((.*?))\\d[:punct:]\\d+")[,1]
-      PDF_ABC_Right_Side[[i]] <- str_match(ABC[[i]], "\\d+[:punct:]\\d+\\s*((.*?))\\s*$")[,2]
+      PDF_ABC_Left_Side[[i]] <- str_match(ABC[[i]], "^((.*?))\\$\\d[:punct:]\\d+")[,1]
+      PDF_ABC_Right_Side[[i]] <- str_match(ABC[[i]], "\\$\\d+[:punct:]\\d+\\s*((.*?))\\s*$")[,2]
       i=i+1
     }
   }
@@ -262,6 +261,138 @@ Compare_fun<-function(CMI_ABC_Df,CMI_Df,ABC_Df,CMI_Price_variation,ABC_Price_var
 }
 
 
+########--------------
+HTML_css <- function() {
+  library(shiny)
+  return(HTML("
+       .cssload-loader {
+       width: 244px;
+       height: 49px;
+       line-height: 49px;
+       text-align: center;
+       position: absolute;
+       left: 50%;
+       transform: translate(-50%, -50%);
+       -o-transform: translate(-50%, -50%);
+       -ms-transform: translate(-50%, -50%);
+       -webkit-transform: translate(-50%, -50%);
+       -moz-transform: translate(-50%, -50%);
+       font-family: helvetica, arial, sans-serif;
+       text-transform: uppercase;
+       font-weight: 900;
+       font-size:18px;
+       color: #0275D8;
+       letter-spacing: 0.2em;
+       }
+       .cssload-loader::before, .cssload-loader::after {
+       content: '';
+       display: block;
+       width: 15px;
+       height: 15px;
+       background: #0275D8;
+       position: absolute;
+       animation: cssload-load 0.81s infinite alternate ease-in-out;
+       -o-animation: cssload-load 0.81s infinite alternate ease-in-out;
+       -ms-animation: cssload-load 0.81s infinite alternate ease-in-out;
+       -webkit-animation: cssload-load 0.81s infinite alternate ease-in-out;
+       -moz-animation: cssload-load 0.81s infinite alternate ease-in-out;
+       }
+       .cssload-loader::before {
+       top: 0;
+       }
+       .cssload-loader::after {
+       bottom: 0;
+       }
+       
+       
+       
+       @keyframes cssload-load {
+       0% {
+       left: 0;
+       height: 9px;
+       width: 350px;
+       }
+       50% {
+       height: 9px;
+       width: 350px;
+       }
+       100% {
+       left: 229px;
+       height: 9px;
+       width: 350px;
+       }
+       }
+       
+       @-o-keyframes cssload-load {
+       0% {
+       left: 0;
+       height: 29px;
+       width: 15px;
+       }
+       50% {
+       height: 8px;
+       width: 39px;
+       }
+       100% {
+       left: 229px;
+       height: 29px;
+       width: 15px;
+       }
+       }
+       
+       @-ms-keyframes cssload-load {
+       0% {
+       left: 0;
+       height: 29px;
+       width: 15px;
+       }
+       50% {
+       height: 8px;
+       width: 39px;
+       }
+       100% {
+       left: 229px;
+       height: 29px;
+       width: 15px;
+       }
+       }
+       
+       @-webkit-keyframes cssload-load {
+       0% {
+       left: 0;
+       height: 29px;
+       width: 15px;
+       }
+       50% {
+       height: 8px;
+       width: 39px;
+       }
+       100% {
+       left: 229px;
+       height: 29px;
+       width: 15px;
+       }
+       }
+       
+       @-moz-keyframes cssload-load {
+       0% {
+       left: 0;
+       height: 29px;
+       width: 15px;
+       }
+       50% {
+       height: 8px;
+       width: 39px;
+       }
+       100% {
+       left: 229px;
+       height: 29px;
+       width: 15px;
+       }
+       }
+       "
+  ))
+}
 
 
 
