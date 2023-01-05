@@ -12,14 +12,13 @@ ui <- fluidPage(
   titlePanel("Price comparison", windowTitle = "Price comparison"),
   sidebarPanel(
     fileInput("PDF_file1", "Import CMI PDF File", accept = ".pdf"),
-    br(),
     fileInput("PDF_file2", "Import ABC PDF File", accept = ".pdf"),
-    
-    checkboxInput("UpdateGS",
-                  "Update CMI Platinum Pricing Sheet", value = FALSE),
     br(),
+    checkboxInput("UpdateGS",
+                  "Update CMI Platinum Pricing Sheet", value = FALSE), br(),
     checkboxInput("Update_HD",
                   "Update Price Variation Sheet", value = FALSE),
+    br(),br(),
     br(),
     fluidRow(
       column(
