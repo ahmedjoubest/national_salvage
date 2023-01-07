@@ -441,7 +441,7 @@ server <- function(input, output, session) {
                     tags$p("This data table shows the items that matches between ABC and CMI"),
                     width=12,DT::dataTableOutput('Correspondance_Df')%>% 
                       withSpinner(color="#3C8DBC",type=4, size = 0.5),br(),
-                    h3("Non Corresponding Data Frame"), br(),
+                    h3("Non Corresponding items"), br(),
                     tags$p("You can find below the items that don't match between the two uploaded PDF's"),
                     width=12,DT::dataTableOutput('non_Correspondance_Df') %>% 
                       withSpinner(color="#3C8DBC",type=4, size = 0.5),
