@@ -17,7 +17,7 @@ server <- function(input, output, session) {
                              Loading Data... </div>"),
                showConfirmButton = FALSE,
                html = TRUE,
-               size = 's')
+               size = 'm')
     
     
     ## Reading and Preparing Data----------------------------
