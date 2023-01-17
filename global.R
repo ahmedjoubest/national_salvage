@@ -20,6 +20,7 @@ library(htmlwidgets)
 library(DT)
 library(rdrop2)
 library(shinyalert)
+library(lubridate)
 
 
 # Sourcing  ------------------------------

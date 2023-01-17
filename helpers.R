@@ -4,6 +4,24 @@ CMI_fun<-function(PDF_CMI){
   colnames(CMI_char_length)=c("ID","num_char", "num_space","num_char_nospace")
   CMI_char_length<- CMI_char_length%>% 
     mutate(cond=" ")
+  
+  #Detect Date ---------
+  
+  for(i in 1:length(PDF_CMI[[1]]) ){
+    if(str_detect(PDF_CMI[[1]][i],"\\d{4}-\\d{2}-\\d{2}")){
+      CMI_Date <- str_extract(PDF_CMI[[1]][i], "\\d{4}-\\d{2}-\\d{2}") 
+      
+    } else if(str_detect(PDF_CMI[[1]][i],"\\d{2}-\\d{2}-\\d{4}")){
+      CMI_Date <- str_extract(PDF_CMI[[1]][i], "\\d{2}-\\d{2}-\\d{4}")
+      CMI_Date <- as.Date(strptime(CMI_Date, format = "%d-%m-%Y"))
+      
+    } else if(str_detect(PDF_CMI[[1]][i],"\\d{1,2}-\\w{3}-\\d{2}")){
+      CMI_Date <- str_extract(PDF_CMI[[1]][i], "\\d{1,2}-\\w{3}-\\d{2}")
+      CMI_Date <- format(dmy(CMI_Date), "%d-%m-%Y")
+      CMI_Date <- as.Date(strptime(CMI_Date, format = "%d-%m-%Y"))
+    }
+  }
+  #---------
   i=1
   while (i <= length(PDF_CMI[[1]])){
     if(str_count(PDF_CMI[[1]][i], '\\s\\$*\\d[:punct:]\\d+')>=1){
@@ -57,7 +75,8 @@ CMI_fun<-function(PDF_CMI){
     CMI_Df[i,2]=sub(".*\\$" , "", New_PDF_CMI[i]) %>% as.numeric()
   }
   CMI_Df=CMI_Df[!is.na(CMI_Df[,2]),] 
-  return(CMI_Df)
+  return(list(CMI_Df=CMI_Df,CMI_Date=CMI_Date))
+  
 }
 
 ABC_fun<-function(PDF_ABC){
@@ -65,8 +84,25 @@ ABC_fun<-function(PDF_ABC){
   colnames(ABC_char_length)=c("ID","num_char", "num_space","num_char_nospace")
   ABC_char_length<- ABC_char_length%>% 
     mutate(cond=" ")
+  
+  ###-----------------
+  for(i in 1:length(PDF_ABC[[1]]) ){
+    if(str_detect(PDF_ABC[[1]][i],"\\d{4}-\\d{2}-\\d{2}")){
+      ABC_Date <- str_extract(PDF_ABC[[1]][i], "\\d{4}-\\d{2}-\\d{2}")
+      
+    } else if(str_detect(PDF_ABC[[1]][i],"\\d{2}-\\d{2}-\\d{4}")){
+      ABC_Date <- str_extract(PDF_ABC[[1]][i], "\\d{2}-\\d{2}-\\d{4}")
+      ABC_Date <- as.Date(strptime(ABC_Date, format = "%d-%m-%Y"))
+    } else if(str_detect(PDF_ABC[[1]][i],"\\d{1,2}-\\w{3}-\\d{2}")){
+      ABC_Date <- str_extract(PDF_ABC[[1]][i], "\\d{1,2}-\\w{3}-\\d{2}")
+      ABC_Date <- format(dmy(ABC_Date), "%d-%m-%Y")
+      ABC_Date <- as.Date(strptime(ABC_Date, format = "%d-%m-%Y"))
+
+    }
+  }
+  
+  ###-----------------
   i=1
-  length(PDF_ABC[[1]])
   while (i <= length(PDF_ABC[[1]])){
     if(str_count(PDF_ABC[[1]][i], '\\s\\$\\d[:punct:]\\d+')>=1){
       ABC_char_length[i,1]=i
@@ -139,7 +175,7 @@ ABC_fun<-function(PDF_ABC){
   ABC_Df=ABC_Df[!is.na(ABC_Df[,2]),] 
   #ABC_Df<-ABC_Df[!duplicated(ABC_Df[,1]),]
   
-  return(ABC_Df)
+  return(list(ABC_Df=ABC_Df,ABC_Date=ABC_Date))
 }
 
 Reference_Name_All_Items<- function(CMI_ABC_Reference_name){
