@@ -1,6 +1,7 @@
 # Packages  ------------------------------
 
 library(shiny)
+library(shinyjs)
 library(shinyWidgets)
 library(shinycssloaders)
 library(pdftools)

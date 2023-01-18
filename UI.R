@@ -1,4 +1,5 @@
 ui <- fluidPage(
+  useShinyjs(),
   useShinyalert(), 
   # Custom loading pop up with css classes
   tags$head(tags$style(HTML_css())),
@@ -11,6 +12,7 @@ ui <- fluidPage(
   
   titlePanel("Price comparison", windowTitle = "Price comparison"),
   sidebarPanel(
+    style = "background-color: #F5F5F5;",
     fileInput("PDF_file1", "Import CMI PDF File", accept = ".pdf"),
     fileInput("PDF_file2", "Import ABC PDF File", accept = ".pdf"),
     br(),
@@ -38,6 +40,7 @@ ui <- fluidPage(
     tabsetPanel(id = "navbar_id",type = "tabs",
                 tabPanel(
                   "CMI & ABC Price Variation",
+                  style = "background-color: #F5F5F5;",
                   conditionalPanel(
                     condition = "input.Run>=1",
                     h3("CMI & ABC Price Variation:"),

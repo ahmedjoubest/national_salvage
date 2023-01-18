@@ -20,11 +20,11 @@ server <- function(input, output, session) {
                size = 'm')
     
     ## Reading and Preparing Data----------------------------
-    CMI_ABC_Reference_name <- read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
+    CMI_ABC_Reference_name <- read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=385363260",
                                          sheet = "Reference name all items")
-    values$CMI_Price_variation <- read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
+    values$CMI_Price_variation <- read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=385363260",
                                              sheet = "CMI Historical Data") %>% as.data.frame()
-    values$ABC_Price_variation  <-  read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
+    values$ABC_Price_variation  <-  read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=385363260",
                                                sheet = "ABC Historical Data") %>% as.data.frame()
     
     
@@ -32,7 +32,6 @@ server <- function(input, output, session) {
       column_to_rownames(colnames(values$CMI_Price_variation) [1]) 
     values$ABC_Price_variation <- values$ABC_Price_variation %>% 
       column_to_rownames(colnames(values$ABC_Price_variation) [1]) 
-    
     Reference_Name  <- Reference_Name_All_Items(CMI_ABC_Reference_name)
     CMI_Reference_name  <-  Reference_Name[[1]][!duplicated(Reference_Name[[1]]), ]
     ABC_Reference_name  <-   Reference_Name[[2]][!duplicated(Reference_Name[[2]]), ]
@@ -73,7 +72,7 @@ server <- function(input, output, session) {
     ## Update CMI Platinum Pricing Sheet --------------------
     
     if (input$UpdateGS){
-      CMI_Pricing <-read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
+      CMI_Pricing <-read_sheet("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=385363260",
                                sheet = "CMI Platinum Pricing")
       CMI_Pricing <- CMI_Pricing %>% select("Product")
       CMI_Pricing<- CMI_Pricing[!is.na(CMI_Pricing$Product),] 
@@ -88,7 +87,7 @@ server <- function(input, output, session) {
         }
       }
       DF_to_overwrite<-DF_to_overwrite %>% drop_na()
-      sheet_write("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
+      sheet_write("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=385363260",
                   data = DF_to_overwrite, sheet = "Scrapper for R")
     }
     
@@ -116,8 +115,6 @@ server <- function(input, output, session) {
         if( sum(rownames(values$CMI_Price_variation)[1:nrow(values$CMI_Price_variation)]==as.character(CMI_Date))==1){
           values$CMI_Price_variation <- values$CMI_Price_variation[!(rownames(values$CMI_Price_variation) == as.character(CMI_Date)),]
         }
-       # row_index <- which(rownames(values$CMI_Price_variation) == as.character(CMI_Date))
-       # values$CMI_Price_variation <- values$CMI_Price_variation[-row_index, ]
       }
       #### Adding new reference names to historical data ------------------
       for(i in 1:nrow(CMI_Reference_name)){
@@ -208,8 +205,7 @@ server <- function(input, output, session) {
           if( sum(rownames(values$ABC_Price_variation)[1:nrow(values$ABC_Price_variation)]==as.character(ABC_Date))==1){
             values$ABC_Price_variation <- values$ABC_Price_variation[!(rownames(values$ABC_Price_variation) == as.character(ABC_Date)),]
           }
-         # row_index <- which(rownames(values$ABC_Price_variation) == as.character(ABC_Date))
-         # values$ABC_Price_variation <- values$ABC_Price_variation[-row_index, ]
+
         }
         ####  Adding new reference names to historical data ------------------
         
@@ -320,7 +316,6 @@ server <- function(input, output, session) {
         CMI_NewItems_htlm <- sapply(
           1:nrow(CMI_NewItems_in_PDf),
           function(i){
-            #paste0("<div  style=text-align: left <li>", CMI_NewItems_in_PDf[i,1]," </li></div>")
             paste0("<li>", CMI_NewItems_in_PDf[i,1],"</li>")
           }) %>% paste0(collapse = "")
         
@@ -386,10 +381,10 @@ server <- function(input, output, session) {
                         )), type = "warning", size = "l", animation = TRUE)
           
         } 
-        sheet_write("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
-                    data =  cbind(CMI_Date=rownames(values$CMI_Price_variation),values$CMI_Price_variation), sheet = "CMI Historical Data")
-        sheet_write("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
-                    data =  cbind(ABC_Date=rownames(values$ABC_Price_variation),values$ABC_Price_variation), sheet = "ABC Historical Data")
+        sheet_write("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=385363260",
+                    data =  cbind(Date=rownames(values$CMI_Price_variation),values$CMI_Price_variation), sheet = "CMI Historical Data")
+        sheet_write("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=385363260",
+                    data =  cbind(Date=rownames(values$ABC_Price_variation),values$ABC_Price_variation), sheet = "ABC Historical Data")
       } else {
         if(nrow(CMI_Missing_from_PDf)>0 |   nrow(CMI_NewItems_in_PDf)>0){
           shinyalert( "Warning messages!",
@@ -414,7 +409,7 @@ server <- function(input, output, session) {
                           
                         )), type = "warning", size = "l", animation = TRUE)
         } 
-        sheet_write("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=0",
+        sheet_write("https://docs.google.com/spreadsheets/d/1ABYeL_aWjM8RZcevTXWnTAyl_meV2RVTdQFKvfIeOXI/edit#gid=385363260",
                     data = cbind(CMI_Date=rownames(values$CMI_Price_variation),values$CMI_Price_variation), sheet = "CMI Historical Data")
         
       } 
@@ -423,10 +418,11 @@ server <- function(input, output, session) {
     
     
   })
+  tab_added <- reactiveVal(FALSE)
   
   observeEvent(input$PDF_file2,{
-    if(length(input$PDF_file2)>0){
-      appendTab("navbar_id", 
+    if(nrow(input$PDF_file2)==1 && !tab_added()){
+            appendTab("navbar_id", 
                 tabPanel(
                   "Price comparison",
                   conditionalPanel(
@@ -475,9 +471,11 @@ server <- function(input, output, session) {
                   )
                   ,value = "value_tab2")
       )
-    } else {
+      tab_added(TRUE)
+    } else if(nrow(input$PDF_file2)!=1 && tab_added()){
       removeTab("navbar_id", target = "value_tab1")
       removeTab("navbar_id", target = "value_tab2")
+      tab_added(FALSE)
     }
   })
   
@@ -565,29 +563,41 @@ server <- function(input, output, session) {
 
   output$Hc_Price_variation <- renderHighchart({
     req(input$PDF_file1)
+    
+    CMI_HC_variation<-values$CMI_Price_variation
+    colnames(CMI_HC_variation) <- paste0(colnames(CMI_HC_variation)," - CMI")
+    CMI_HC_variation <- CMI_HC_variation %>% 
+      rownames_to_column("Date") 
+    
+    ABC_HC_variation<-values$ABC_Price_variation
+    colnames(ABC_HC_variation) <- paste0(colnames(ABC_HC_variation)," - ABC")
+    ABC_HC_variation <- ABC_HC_variation %>% 
+      rownames_to_column("Date")
+    
+    CMI_ABC_HC_DF <- merge(CMI_HC_variation,ABC_HC_variation, by = "Date", all = TRUE,
+                        sort = TRUE) %>% column_to_rownames("Date")
+    
     hchat <- highchart() %>% 
       hc_chart(type = "line") %>%
-      hc_xAxis(categories =sort(unique(c(rownames(values$CMI_Price_variation),rownames(values$ABC_Price_variation))))
-               ,title = list(text= '<b> Date <b>')) %>%
+      hc_xAxis(categories =rownames(CMI_ABC_HC_DF),title = list(text= '<b> Date <b>')) %>%
       hc_yAxis(min= 0, title=list(text= "<b> Price ($) <b>")) %>%
       hc_tooltip(shared = TRUE,
                  crosshairs = TRUE,
                  followPointer = T,
-                 borderColor = "grey")
-    
+                 borderColor = "grey") 
     
     for(i in 1:length(input$CMI_referance)){
       if(length(input$CMI_referance[i])>0){
         hchat <- hchat %>% 
           hc_add_series(name=paste0(input$CMI_referance[i]," - ","CMI"),
-                        data = values$CMI_Price_variation[,input$CMI_referance[i]] %>% as.numeric())
+                        data = CMI_ABC_HC_DF[,paste0(input$CMI_referance[i]," - ","CMI")] %>% as.numeric(),connectNulls = TRUE)
       }
     }
     for(i in 1:length(input$ABC_referance)){
       if(length(input$ABC_referance[i])>0){
         hchat <- hchat %>% 
           hc_add_series(name=paste0(input$ABC_referance[i]," - ","ABC"),
-                        data = values$ABC_Price_variation[,input$ABC_referance[i]] %>% as.numeric())
+                        data = CMI_ABC_HC_DF[,paste0(input$ABC_referance[i]," - ","ABC")] %>% as.numeric(),connectNulls = TRUE)
       }
     }
     hchat %>% hc_colors(
@@ -596,6 +606,7 @@ server <- function(input, output, session) {
         rep("grey",length(input$ABC_referance))
       )
     )
+
   })
   
   
